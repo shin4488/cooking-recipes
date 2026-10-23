@@ -20,20 +20,18 @@
 | データ保持 | 本体・共有拡張の同時保存、再起動、強制終了、アプリ更新に対応。保存失敗時は既存データを残す |
 | 性能目標 | iPhone SE（第3世代）で端末保存の95%が1秒以内、5,000件検索の95%が300ms以内、一覧2秒以内 |
 | セキュリティ | 保存データに[iOSのデータ保護](https://developer.apple.com/documentation/foundation/fileprotectiontype)を適用し、共有先を本体・共有拡張に限定する。外部入力は形式・長さを検証し、タイトル・タグはコードやHTMLとして実行しない |
-| 通信の安全性 | タイトル取得は許可されたHTTPS宛先のみ。接続・転送ごとに公開IPを確認。認証Cookie・JavaScript実行・アクセス制限の回避はしない |
-| タイトル取得の制限 | 1件ずつ、20秒・展開後1 MiB・転送3回まで。通信制御用にURLごとの最終試行日時を端末内で24時間保持し、その間の再取得を防ぐ。自動再試行・巡回なし。401・403・429等は停止。サイト側の厳しい条件を優先 |
-| プライバシー | クリップボードは貼り付け操作時だけ読む。IDFA・他社のアプリやサイトをまたぐ追跡・指紋採取を使わない。解析データの広告利用は無効にする。追跡なしを検証できなければ該当SDKの送信を止める |
+| 通信の安全性 | タイトル取得は許可されたHTTPS宛先のみ。接続・リダイレクトごとに公開IPを確認。認証Cookie・JavaScript実行・アクセス制限の回避はしない |
+| タイトル取得の制限 | 1件ずつ、20秒・展開後1 MiB・リダイレクト3回まで。通信制御用にURLごとの最終試行日時を端末内で24時間保持し、その間の再取得を防ぐ。自動再試行・巡回なし。401・403・429等は停止。サイト側の厳しい条件を優先 |
+| プライバシー | クリップボードは貼り付け操作時だけ読む。IDFA・他社のアプリやサイトをまたぐ追跡・フィンガープリンティングを使わない。解析データの広告利用は無効にする。追跡なしを検証できなければ該当SDKの送信を止める |
 
 ## 運営費の見積もり
 
-**Appleの年間登録料を含め、年12,800円（月換算約1,070円）を想定する。登録料は開発者アカウント単位で、同じアカウントならアプリ数が増えても変わらない。** 手持ちのMac・iPhoneを使い、自分で開発・保守し、Web公開は無料枠に収める前提。広告収益は差し引かない。
+**Appleの年間登録料を含め、年12,800円（月換算約1,070円）を想定する。** 手持ちのMac・iPhoneを使い、自分で開発・保守し、Web公開は無料枠に収める前提。広告収益は差し引かない。
 
 | 項目 | 運営者の費用 | 前提・根拠 |
 | --- | --- | --- |
-| Apple Developer Program | 1アカウントにつき年12,800円 | App Storeでの配信・更新に必要。複数アプリで共通。[日本のアプリ内購入価格](https://apps.apple.com/jp/app/apple-developer/id640199958)と[年間登録の案内](https://developer.apple.com/jp/help/account/membership/program-enrollment)に基づく。購入画面の金額を優先 |
+| Apple Developer Program | 1アカウントにつき年12,800円 | App Storeでの配信・更新に必要。同じアカウントの複数アプリで共通のため、加入済みならこのアプリのための追加登録料は不要。[日本のアプリ内購入価格](https://apps.apple.com/jp/app/apple-developer/id640199958)と[年間登録の案内](https://developer.apple.com/jp/help/account/membership/program-enrollment)に基づく。購入画面の金額を優先 |
 | データ保存・タイトル取得 | 0円 | 端末内保存と端末からの直接取得。有料API・運営者のデータサーバーは使わない |
 | 広告配信・同意管理 | 0円 | AdMob＋UMPを利用。[AdMobは利用無料](https://support.google.com/admob/answer/7356092?hl=ja) |
 | 利用状況の解析 | 0円 | Google Analytics for Firebaseの標準機能を利用。[公式料金表](https://firebase.google.com/pricing?hl=ja) |
 | 案内用Webサイト | 無料枠内で0円 | [Firebase Hosting](https://firebase.google.com/pricing?hl=ja)の無料プラン・無料サブドメインを想定。文字中心の利用条件・プライバシー説明・問い合わせ先と、AdMobでのアプリ所有権確認用ファイル[app-ads.txt](https://support.google.com/admob/answer/9820295?hl=ja)を公開。無料プランでは転送量の上限に達しても自動課金されず、[サイトの公開が停止する](https://firebase.google.com/docs/hosting/usage-quotas-pricing?hl=ja)。 |
-
-Apple Developer Programに同じアカウントで加入済みなら、このアプリのための追加登録料は不要。

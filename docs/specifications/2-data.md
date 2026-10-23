@@ -43,7 +43,7 @@
 
 常時同期は行わず、編集・削除の反映には再バックアップが必要。**旧端末を手放す前に対応版へ更新し、バックアップを完了する。** 実行前に旧端末のデータを失うと、この機能では復旧できない。
 
-CloudKitの本人専用領域＋CKAssetで、ファイルと形式の版・日時・件数を手動保存する。CKSyncEngineは使わない。[Apple・本人専用領域](https://developer.apple.com/documentation/cloudkit/ckcontainer/privateclouddatabase)・[CKAsset](https://developer.apple.com/documentation/cloudkit/ckasset)
+CloudKitの[プライベートデータベース](https://developer.apple.com/documentation/cloudkit/ckcontainer/privateclouddatabase)に、バックアップのファイルを[CKAsset](https://developer.apple.com/documentation/cloudkit/ckasset)として、形式の版・日時・件数とともに手動で保存する。CKSyncEngineは使わない。
 
 ## 外部からのタイトル取得
 
