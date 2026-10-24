@@ -5,11 +5,11 @@
 | 用途 | 選定 | 理由 |
 | --- | --- | --- |
 | 対象 | 日本語、iPhone、iOS 18以降。日本のApp Storeで配信 | 日本のiPhone利用者向けに開発・検証の対象を絞るため |
-| 画面 | Swift・SwiftUI | iPhone専用のため、共有機能や将来のiCloudバックアップもSwiftで統一し、構成をシンプルにできる。iOS標準の操作・表示にも対応しやすい |
+| 言語・画面 | Swift・SwiftUI | iPhone専用のため、共有機能や将来のiCloudバックアップもSwiftで統一し、構成をシンプルにできる。iOS標準の操作・表示にも対応しやすい |
 | 広告 | AdMob＋UMP | 広告表示と必要な同意管理にGoogle公式SDKを利用できるため |
 | 利用状況の解析 | Google Analytics for Firebase | iOSに対応し、利用者数・画面表示・登録や検索の利用状況を把握して改善に役立てられるため |
 
-共有登録・端末保存・タイトル取得のAPIやライブラリは各仕様を満たすものを実装時に選び、広告仲介・専用の保存サーバーは使わず、レシピのURL・タイトル・タグは端末内で管理する。
+共有登録・端末保存・タイトル取得のAPIやライブラリは、各仕様を満たすものを実装時に選ぶ。広告のメディエーション（AdMob以外の広告ネットワークの併用）と専用の保存サーバーは使わず、レシピのURL・タイトル・タグは端末内で管理する。
 
 ## 非機能要件
 
@@ -34,4 +34,4 @@
 | データ保存・タイトル取得 | 0円 | 端末内保存と端末からの直接取得。有料API・運営者のデータサーバーは使わない |
 | 広告配信・同意管理 | 0円 | AdMob＋UMPを利用。[AdMobは利用無料](https://support.google.com/admob/answer/7356092?hl=ja) |
 | 利用状況の解析 | 0円 | Google Analytics for Firebaseの標準機能を利用。[公式料金表](https://firebase.google.com/pricing?hl=ja) |
-| 案内用Webサイト | 無料枠内で0円 | [Firebase Hosting](https://firebase.google.com/pricing?hl=ja)の無料プラン・無料サブドメインを想定。文字中心の利用条件・プライバシー説明・問い合わせ先と、AdMobでのアプリ所有権確認用ファイル[app-ads.txt](https://support.google.com/admob/answer/9820295?hl=ja)を公開。無料プランでは転送量の上限に達しても自動課金されず、[サイトの公開が停止する](https://firebase.google.com/docs/hosting/usage-quotas-pricing?hl=ja)。 |
+| 案内用Webサイト | 無料枠内で0円 | [Firebase Hosting](https://firebase.google.com/pricing?hl=ja)の無料プラン・無料サブドメインを想定。文字中心の利用条件・プライバシー説明・問い合わせ先と、AdMobでのアプリ所有権確認用ファイル[app-ads.txt](https://support.google.com/admob/answer/9820295?hl=ja)を公開。無料プランでは転送量の上限に達しても自動課金されず、[サイトの公開が停止する](https://firebase.google.com/docs/hosting/usage-quotas-pricing?hl=ja) |
