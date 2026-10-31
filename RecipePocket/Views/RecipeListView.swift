@@ -50,7 +50,8 @@ struct RecipeListView: View {
                         tagsExpanded: expandedTagIDs.contains(recipe.id),
                         actions: actions(for: recipe)
                     )
-                    .listRowBackground(highlightedID == recipe.id ? Color.accentColor.opacity(0.15) : nil)
+                    // 警告を閉じる途中に色を付けるため、その間は灰色になる accentColor ではなく、アセットの色を使う
+                    .listRowBackground(highlightedID == recipe.id ? Color("AccentColor").opacity(0.15) : nil)
                 }
                 .onMove(perform: isReordering ? { store.move(fromOffsets: $0, toOffset: $1) } : nil)
             } header: {
