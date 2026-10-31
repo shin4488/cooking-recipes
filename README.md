@@ -27,6 +27,7 @@ Firebase の設定ファイル（`RecipePocket/Resources/GoogleService-Info.plis
 | `RecipeKit/Sources/RecipeData/` | 端末内の保存（SwiftData）。本体と共有拡張が App Group の同じ保存先を使う |
 | `RecipeKit/Sources/RecipeUI/` | 本体と共有拡張が使う登録・編集のフォーム |
 | `Config/` | Info.plist、App Group の設定、ビルド設定（xcconfig） |
+| `web/` | 公開する Web ページ（利用条件・プライバシー説明・問い合わせ）を作る仕組み。文面はアプリと同じ `RecipePocket/Support/PolicyText.swift` を使い、運営者名・問い合わせ先は `Config/Local.xcconfig` から入れる |
 
 ## テスト
 
