@@ -34,7 +34,8 @@ struct RecipeListView: View {
             SettingsView()
         }
         .overlay(alignment: .bottom) {
-            ToastView()
+            // 設定を開いている間は、設定の画面に表示する
+            if !showsSettings { ToastView() }
         }
         .analyticsScreen(.recipeList)
     }

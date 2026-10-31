@@ -42,6 +42,9 @@ struct SettingsView: View {
                 Text("メールアプリを設定するか、次のアドレスへ送ってください。\n\(AppInfo.contactEmail ?? "")")
             }
         }
+        .overlay(alignment: .bottom) {
+            ToastView()
+        }
         .analyticsScreen(.settings)
     }
 
