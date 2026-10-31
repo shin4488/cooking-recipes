@@ -28,9 +28,9 @@ public enum TitleRules {
         return title
     }
 
-    public static func displayTitle(_ title: String?, host: String?) -> String {
+    /// 未設定でもホスト名は加えない。どのサイトかはタイトルとは別に表示する
+    public static func displayTitle(_ title: String?) -> String {
         if let title, !title.isEmpty { return title }
-        guard let host else { return "タイトル未設定" }
-        return "タイトル未設定（\(host)）"
+        return "タイトル未設定"
     }
 }

@@ -140,6 +140,13 @@ struct TitleFetcherTests {
         #expect(await fetcher.fetchTitle(for: url) == .fetched("肉じゃがのレシピ"))
     }
 
+    @Test("取得したタイトルから、末尾のサイト名を除く")
+    func removesSiteName() async {
+        let url = "https://www.sirogohan.com/recipe/test-site-name/"
+        StubURLProtocol.register(url, .init(body: Data("<head><title>肉じゃがの作り方：白ごはん.com</title></head>".utf8)))
+        #expect(await fetcher.fetchTitle(for: url) == .fetched("肉じゃがの作り方"))
+    }
+
     @Test("対応サイト以外には通信しない")
     func unsupportedSite() async {
         let url = "https://www.kurashiru.com/recipes/test"

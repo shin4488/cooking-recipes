@@ -52,7 +52,7 @@ public struct Recipe: Identifiable, Hashable, Sendable {
 
     public var host: String? { RecipeURL.host(of: url) }
 
-    public var displayTitle: String { TitleRules.displayTitle(title, host: host) }
+    public var displayTitle: String { TitleRules.displayTitle(title) }
 
     /// 一覧でホスト名の代わりに示す名前。対応サイトはサイト名を併記する
     public var siteLabel: String? { SupportedSite.site(forHost: host)?.name ?? host }

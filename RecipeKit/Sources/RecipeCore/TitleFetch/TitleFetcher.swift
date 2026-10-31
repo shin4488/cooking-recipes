@@ -81,7 +81,8 @@ public struct TitleFetcher: Sendable {
               page.isHTML,
               page.remoteAddresses.allSatisfy(PublicAddress.isPublic)
         else { return .failed }
-        return HTMLTitleExtractor.title(from: page.data, contentType: page.contentType).map { .fetched($0) } ?? .notFound
+        return HTMLTitleExtractor.title(from: page.data, contentType: page.contentType)
+            .map { .fetched(site.removingSiteName(from: $0)) } ?? .notFound
     }
 
     func isPublicHost(_ host: String?) async -> Bool {

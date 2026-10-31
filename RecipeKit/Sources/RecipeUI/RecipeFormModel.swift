@@ -108,7 +108,7 @@ public final class RecipeFormModel {
             return "保存後に\(site.name)のページからタイトルを取得します"
         }
         guard TitleRules.clean(title).isEmpty else { return nil }
-        return "未入力のときは「\(TitleRules.displayTitle(nil, host: RecipeURL.host(of: trimmedURL)))」と表示します"
+        return "未入力のときは「\(TitleRules.displayTitle(nil))」と表示します"
     }
 
     /// 貼り付けた文字列からURLを取り出して入れる

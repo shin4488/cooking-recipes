@@ -28,7 +28,9 @@ public struct SharedContent: Equatable, Sendable {
             .filter { !$0.contains(where: \.isNewline) && webURLs(in: $0).isEmpty }
             .compactMap(TitleRules.acceptReceived)
             .first
-        return SharedContent(urls: found, title: title)
+        // 対応サイトのページなら、取得したタイトルと同じく末尾のサイト名を除く
+        let site = found.first.flatMap { SupportedSite.site(forHost: RecipeURL.host(of: $0)) }
+        return SharedContent(urls: found, title: title.map { site?.removingSiteName(from: $0) ?? $0 })
     }
 
     /// 文中の http・https のURLを順に返す
