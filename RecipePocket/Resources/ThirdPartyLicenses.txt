@@ -20,9 +20,9 @@ nanopb 2.30910.1
 https://github.com/firebase/nanopb
 zlib License
 
-================================================================================
+========================================
 Apache License 2.0（Firebase Apple SDK、GoogleAppMeasurement、GoogleUtilities、Promises）
-================================================================================
+========================================
 
 
                                  Apache License
@@ -227,9 +227,9 @@ Apache License 2.0（Firebase Apple SDK、GoogleAppMeasurement、GoogleUtilities
    See the License for the specific language governing permissions and
    limitations under the License.
 
-================================================================================
+========================================
 MIT License（GoogleUtilities の一部）
-================================================================================
+========================================
 
 Copyright (c) 2017 Landon J. Fuller <landon@landonf.org>
 All rights reserved.
@@ -251,9 +251,9 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-================================================================================
+========================================
 zlib License（nanopb）
-================================================================================
+========================================
 
 Copyright (c) 2011 Petteri Aimonen <jpa at nanopb.mail.kapsi.fi>
 
