@@ -18,7 +18,7 @@ struct PrivacyView: View {
                 )
                 Destination(
                     name: "Google LLC（Google Analytics for Firebase）",
-                    information: "画面の表示、レシピの登録・編集・削除・並べ替え、検索条件の追加などの操作の種類と回数、アプリ・端末の情報（アプリの版、OSの版、機種など）、解析用のアプリの識別子、IPアドレスから推定する地域など。",
+                    information: "画面の表示、レシピの登録・編集・削除・並べ替え、検索条件の追加（タグからか入力からか）などの操作の種類と回数、登録時に付けたタグの数、ごみ箱を空にした件数、アプリ・端末の情報（アプリの版、OSの版、機種など）、解析用のアプリの識別子、IPアドレスから推定する地域など。",
                     purpose: "利用状況を把握し、アプリを改善するため。広告には使いません。"
                 )
                 Link("Google によるデータの使用について", destination: URL(string: "https://policies.google.com/technologies/partner-sites?hl=ja")!)
