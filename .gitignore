@@ -1,0 +1,13 @@
+.DS_Store
+
+# Xcode・Swift Package Manager の生成物
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+.build/
+.swiftpm/
+
+# 公開前に入れる値（Team ID・運営者名・連絡先）と Firebase の設定ファイルは git で管理しない
+Config/Local.xcconfig
+RecipePocket/Resources/GoogleService-Info.plist
