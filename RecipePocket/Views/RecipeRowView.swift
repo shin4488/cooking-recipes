@@ -27,11 +27,12 @@ struct RecipeRowView: View {
         HStack(alignment: .top, spacing: 8) {
             VStack(alignment: .leading, spacing: 6) {
                 Button(action: actions.open) {
-                    // 強い色の文字が並ばないよう、タイトルは本文の色にする。未設定は太さで区別する
+                    // 強い色の文字が並ばないよう、タイトルは本文の色にする。未設定は太さで区別する。
+                    // ボタンの中では .primary がアクセントカラーになるため、Color.primary を指定する
                     Text(recipe.displayTitle)
                         .font(.headline)
                         .fontWeight(recipe.title == nil ? .regular : nil)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.primary)
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -53,7 +54,7 @@ struct RecipeRowView: View {
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .font(.title3)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                         .frame(minWidth: 44, minHeight: 44)
                         .contentShape(.rect)
                 }

@@ -89,7 +89,7 @@ struct TrashView: View {
             } label: {
                 Image(systemName: "ellipsis.circle")
                     .font(.title3)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                     .frame(minWidth: 44, minHeight: 44)
                     .contentShape(.rect)
             }
