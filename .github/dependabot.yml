@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # cooldownはセキュリティ更新には適用されない。
+  # Firebase の版は Xcode のプロジェクトで固定しており、ここでは更新しない。
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns: ['*']

@@ -1,0 +1,6 @@
+// 公開前に入れる値は、git管理外の Config/Local.xcconfig に書く（書き方は Config/Local.example.xcconfig）
+DEVELOPMENT_TEAM =
+OPERATOR_NAME =
+CONTACT_EMAIL =
+
+#include? "Local.xcconfig"
