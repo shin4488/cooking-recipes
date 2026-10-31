@@ -82,9 +82,13 @@ struct ComposingAwareTextField: UIViewRepresentable {
 
     func updateUIView(_ field: UITextField, context: Context) {
         context.coordinator.parent = self
-        // 変換中の文字を消さないよう、変換が終わってから入力欄に反映する
-        if field.markedTextRange == nil, field.text != text {
+        // 変換中の文字も text に送るため、食い違うのは「すべてクリア」などアプリ側で書き換えたときだけ。
+        // 変換中の文字が入力欄に残らないよう、変換を確定させてから書き換える
+        if field.text != text {
+            context.coordinator.isApplyingText = true
+            field.unmarkText()
             field.text = text
+            context.coordinator.isApplyingText = false
         }
         field.placeholder = placeholder
         field.isEnabled = isEnabled
@@ -97,12 +101,15 @@ struct ComposingAwareTextField: UIViewRepresentable {
     @MainActor
     final class Coordinator: NSObject, UITextFieldDelegate {
         var parent: ComposingAwareTextField
+        /// 入力欄を書き換えている間に届く変更を、入力として扱わない
+        var isApplyingText = false
 
         init(parent: ComposingAwareTextField) {
             self.parent = parent
         }
 
         @objc func editingChanged(_ field: UITextField) {
+            guard !isApplyingText else { return }
             parent.text = field.text ?? ""
             parent.onChange(field.markedTextRange != nil)
         }
