@@ -56,7 +56,7 @@ public struct RecipeFormView: View {
                     .labelStyle(.titleAndIcon)
                 }
             } header: {
-                Text(model.urlChoices.count > 1 ? "保存するURL（必須）" : "URL（必須）")
+                FieldLabel(model.urlChoices.count > 1 ? "保存するURL" : "URL", isRequired: true)
             } footer: {
                 if let error = model.urlError {
                     ErrorText(error)
@@ -64,7 +64,7 @@ public struct RecipeFormView: View {
             }
 
             Section {
-                TextField("タイトル（任意）", text: $model.title, axis: .vertical)
+                TextField("タイトルを入力", text: $model.title, axis: .vertical)
                     .lineLimit(1...4)
                     .focused($focusedField, equals: .title)
                     .onChange(of: model.title) { _, newValue in
@@ -72,7 +72,7 @@ public struct RecipeFormView: View {
                     }
                     .accessibilityLabel("タイトル")
             } header: {
-                Text("タイトル")
+                FieldLabel("タイトル", isRequired: false)
             } footer: {
                 VStack(alignment: .leading, spacing: 4) {
                     if let error = model.titleError {
@@ -90,7 +90,7 @@ public struct RecipeFormView: View {
             Section {
                 TagEditorView(model: model)
             } header: {
-                Text("タグ")
+                FieldLabel("タグ", isRequired: false)
             } footer: {
                 VStack(alignment: .leading, spacing: 4) {
                     if let error = model.tagError {
@@ -112,6 +112,38 @@ public struct RecipeFormView: View {
         var trimmed = text
         while trimmed.last?.isNewline == true { trimmed.removeLast() }
         return trimmed.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline).joined(separator: replacement)
+    }
+}
+
+/// 欄の見出し。必須か任意かを、文字ではなく印で示す
+struct FieldLabel: View {
+    @Environment(\.colorScheme) private var colorScheme
+    private let title: String
+    private let isRequired: Bool
+
+    init(_ title: String, isRequired: Bool) {
+        self.title = title
+        self.isRequired = isRequired
+    }
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Text(title)
+            // 印の色は明るい表示で濃く、暗い表示で淡い。文字の色を反対にして、コントラスト比 4.5:1 以上を保つ
+            Text(isRequired ? "必須" : "任意")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(colorScheme == .dark ? Color.black : Color.white)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(markColor, in: .rect(cornerRadius: 4))
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    /// 必須はアクセントカラー、任意は灰色
+    private var markColor: AnyShapeStyle {
+        if isRequired { return AnyShapeStyle(.tint) }
+        return AnyShapeStyle(Color(white: colorScheme == .dark ? 0.62 : 0.45))
     }
 }
 
