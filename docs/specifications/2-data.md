@@ -70,7 +70,7 @@ CloudKitの[プライベートデータベース](https://developer.apple.com/do
 | サイト規約 | 著作権とは別に取得方法・利用条件を判断する。規約の拘束力は契約への組み入れ等によるが、明示された商用利用制限と争う設計は採らない。[経産省・準則Ⅰ-2-1](https://www.meti.go.jp/press/2024/02/20250212003/20250212003-1r.pdf) |
 | 外部送信の公表 | 対象外を前提にせず、公表方式で対応する。送信情報・送信先の事業者名・双方の利用目的を、一覧から容易に開ける日本語の説明に掲載する。外部送信規律は同意取得を一律に求める制度ではない。[総務省FAQ・1-1、1-8、3-2、4-2～4-6](https://www.soumu.go.jp/main_sosiki/joho_tsusin/d_syohi/gaibusoushin_kiritsu_00002.html) |
 | 個人関連情報 | 広告・解析の識別子等が該当し得る。Googleが個人データと結び付ける場合は、同意取得の確認・記録が必要。[Googleの同意取得方針](https://business.safety.google/intl/ja/appi/)を根拠に、提供項目・期間と確認内容を運営者が記録する。[個人情報保護委員会](https://www.ppc.go.jp/all_faq_index/faq1-q8-3/) |
-| 広告・解析の同意 | 広告は[UMP](https://developers.google.com/admob/ios/privacy)で必要な同意と変更を扱い、配信不可なら取得・表示を停止する。解析は、適用法・規約で同意が必要な場合は取得後に収集する。UMPだけで解析の同意も満たしたとは扱わない。[解析の設定](https://firebase.google.com/docs/analytics/ios/configure-data-collection) |
+| 広告・解析の同意 | 広告は[UMP](https://developers.google.com/admob/ios/privacy)で必要な同意と変更を扱い、配信不可なら取得・表示を停止する。解析は、適用法・規約で同意が必要な場合は取得後に収集する。UMPだけで解析の同意も満たしたとは扱わない。日本向けの配信では、Googleが同意を取得する方針（上の行）に基づき、同意画面を出さずに公表方式で送信し、設定で送信を止められるようにする。[解析の設定](https://firebase.google.com/docs/analytics/ios/configure-data-collection) |
 
 運営者・連絡先・利用条件・プライバシー説明を公開する。Google Analyticsの利用とデータの扱いも明示する。[Google Analytics規約・第7項](https://marketingplatform.google.com/about/analytics/terms/jp/)
 
