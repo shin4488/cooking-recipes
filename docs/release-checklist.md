@@ -28,7 +28,7 @@ cp Config/Local.example.xcconfig Config/Local.xcconfig
 | 4 | 利用条件・プライバシー説明の下書きを確定し、Web に公開する。`web/build.sh` で、`Config/Local.xcconfig` の運営者名・問い合わせ先を入れたページを `web/public` に作り、`web` フォルダで `firebase deploy --only hosting --project <プロジェクトID>` を実行する（初回は `npm install -g firebase-tools` と `firebase login` を先に行う） | `https://<プロジェクトID>.web.app/privacy`・`/terms`・`/support` が開ける。プライバシー説明に、[審査ガイドライン 5.1.1(i)](https://developer.apple.com/app-store/review/guidelines/#data-collection-and-storage) が求める、集める情報と使い道・第三者の扱い・保存期間と削除の求め方・同意の取り消し方がある |
 | 5 | Debug ビルドに起動引数 `-FIRDebugEnabled` を付け、Firebase の DebugView で送信内容を確かめる | 画面名、操作の種類、登録時に付けたタグの数、ごみ箱を空にした件数、検索条件の追加元（タグか入力か）だけが届き、URL・タイトル・タグ名・検索語が含まれない |
 | 6 | 実機で確かめる | iPhone SE（第3世代）で[性能目標](specifications/3-technology.md#非機能要件)を満たす。Safari・Chrome の共有から保存できる。設定の「問い合わせ（メール）」からメールを作れる。VoiceOver・文字サイズの変更・ダーク表示で操作できる |
-| 7 | App Store Connect でアプリを登録する（名前「レシピぽけっと」、カテゴリ「フード/ドリンク」） | プライバシーポリシーのURL、サポートURL（手順4のページ。[審査ガイドライン 1.5](https://developer.apple.com/app-store/review/guidelines/#developer-information) により連絡方法を載せる）、App のプライバシー（Firebase の[データ開示の案内](https://firebase.google.com/docs/ios/app-store-data-collection)に合わせる）、年齢制限、スクリーンショットを入れた |
+| 7 | App Store Connect でアプリを登録する。入れる文面・回答・スクリーンショットは [App Store に入れる内容](app-store-listing.md) の下書きを使う | プライバシーポリシーのURL、サポートURL（手順4のページ。[審査ガイドライン 1.5](https://developer.apple.com/app-store/review/guidelines/#developer-information) により連絡方法を載せる）、App のプライバシー（Firebase の[データ開示の案内](https://firebase.google.com/docs/ios/app-store-data-collection)に合わせる）、年齢制限、スクリーンショットを入れた |
 | 8 | Xcode で Product > Archive を行い、App Store Connect へアップロードする | アーカイブが設定の確認で止まらない |
 | 9 | App Store Connect で審査に提出し、承認されたら公開する | 審査担当からの連絡先を入れた |
 
