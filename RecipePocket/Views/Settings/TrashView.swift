@@ -68,28 +68,44 @@ struct TrashView: View {
     }
 
     private func row(_ item: TrashedRecipe) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(item.recipe.displayTitle)
-                .font(.headline)
-            if let label = item.recipe.siteLabel {
-                Text(label)
+        HStack(alignment: .top, spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.recipe.displayTitle)
+                    .font(.headline)
+                if let label = item.recipe.siteLabel {
+                    Text(label)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Text("あと\(TrashPolicy.daysRemaining(deletedAt: item.deletedAt, now: .now))日で完全に削除")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            Text("あと\(TrashPolicy.daysRemaining(deletedAt: item.deletedAt, now: .now))日で完全に削除")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityElement(children: .combine)
+
+            Menu {
+                menuItems(item)
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.title3)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(.rect)
+            }
+            .accessibilityLabel("「\(item.recipe.displayTitle)」の操作")
         }
-        .accessibilityElement(children: .combine)
         .swipeActions(edge: .trailing) {
             Button("完全に削除", systemImage: "trash", role: .destructive) { pendingDeletion = item }
             Button("戻す", systemImage: "arrow.uturn.backward") { restore(item) }
                 .tint(.green)
         }
-        .contextMenu {
-            Button("戻す", systemImage: "arrow.uturn.backward") { restore(item) }
-            Button("完全に削除", systemImage: "trash", role: .destructive) { pendingDeletion = item }
-        }
+        .contextMenu { menuItems(item) }
+    }
+
+    @ViewBuilder
+    private func menuItems(_ item: TrashedRecipe) -> some View {
+        Button("戻す", systemImage: "arrow.uturn.backward") { restore(item) }
+        Button("完全に削除", systemImage: "trash", role: .destructive) { pendingDeletion = item }
     }
 
     private func restore(_ item: TrashedRecipe) {
