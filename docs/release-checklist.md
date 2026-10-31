@@ -28,7 +28,7 @@ cp Config/Local.example.xcconfig Config/Local.xcconfig
 | 3 | [Google の同意取得方針](https://business.safety.google/intl/ja/appi/)に基づき、提供する項目・期間と確認した内容を記録する | 仕様の [個人関連情報](specifications/2-data.md#法的な整理) の扱いと合っている |
 | 4 | 利用条件・プライバシー説明の下書きを確定し、運営者名・問い合わせ先とともに Web に公開する | アプリ内の文面と Web の文面が同じ。App Store Connect に入れるプライバシーポリシーのURLが開ける |
 | 5 | Debug ビルドに起動引数 `-FIRDebugEnabled` を付け、Firebase の DebugView で送信内容を確かめる | 画面名、操作の種類、登録時に付けたタグの数、ごみ箱を空にした件数、検索条件の追加元（タグか入力か）だけが届き、URL・タイトル・タグ名・検索語が含まれない |
-| 6 | 実機で確かめる | iPhone SE（第3世代）で[性能目標](specifications/3-technology.md#非機能要件)を満たす。Safari・Chrome の共有から保存できる。VoiceOver・文字サイズの変更・ダーク表示で操作できる |
+| 6 | 実機で確かめる | iPhone SE（第3世代）で[性能目標](specifications/3-technology.md#非機能要件)を満たす。Safari・Chrome の共有から保存できる。設定の「問い合わせ（メール）」からメールを作れる。VoiceOver・文字サイズの変更・ダーク表示で操作できる |
 | 7 | App Store Connect でアプリを登録する（名前「レシピぽけっと」、カテゴリ「フード/ドリンク」） | プライバシーポリシーのURL、App のプライバシー（Firebase の[データ開示の案内](https://firebase.google.com/docs/ios/app-store-data-collection)に合わせる）、年齢制限、スクリーンショットを入れた |
 | 8 | Xcode で Product > Archive を行い、App Store Connect へアップロードする | アーカイブが設定の確認で止まらない |
 
