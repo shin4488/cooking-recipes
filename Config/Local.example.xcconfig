@@ -1,0 +1,11 @@
+// このファイルを Config/Local.xcconfig にコピーして値を入れる。Local.xcconfig は git で管理しない
+// 手順は docs/release-checklist.md を参照
+
+// Apple Developer の Team ID（Xcode の Signing & Capabilities で選ぶチーム）
+DEVELOPMENT_TEAM =
+
+// 設定画面・利用条件・プライバシー説明に表示する運営者名
+OPERATOR_NAME =
+
+// 問い合わせ先のメールアドレス
+CONTACT_EMAIL =

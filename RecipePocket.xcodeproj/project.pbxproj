@@ -1,0 +1,624 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0DA2B681239AB1CD542374D5 /* RecipeData in Frameworks */ = {isa = PBXBuildFile; productRef = 08176C446612EB248B2B3F2C /* RecipeData */; };
+		41EE9CDAE756D7C99ACA040E /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 441045DC9225688A3189E7CE /* FirebaseCore */; };
+		5836B25BDE24EF4F6912960A /* RecipeCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9939C853505A6802F8B3336E /* RecipeCore */; };
+		8307023EF48AB99A65DFF20B /* RecipeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4D8D954B4D31115125C42A9D /* RecipeUI */; };
+		9B5F62E39F8685DE8B749C1F /* RecipeData in Frameworks */ = {isa = PBXBuildFile; productRef = C56767E50E6302CF5C94F922 /* RecipeData */; };
+		9B6A4B1BC920483AC67E2B7D /* RecipeUI in Frameworks */ = {isa = PBXBuildFile; productRef = D9556D3476AB399E1AC0D42E /* RecipeUI */; };
+		9FDD427CAFD62C47D6BD521F /* RecipeCore in Frameworks */ = {isa = PBXBuildFile; productRef = F8CD3883022EF665D3248774 /* RecipeCore */; };
+		BB3BCC21995302D23431FAEA /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 46BA930C020855F58D112FBA /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		BDAE68C8AE42521A34B40E2B /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 433B7FC1E1175A0CE3BC311F /* FirebaseAnalyticsCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FDBF089E931387EDACCBF08E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8D48BE356E9E339A02FC9BC7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A647CDCD3D328D98AC033BD2;
+			remoteInfo = ShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EA4D080593CED7F5A1BEE71B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				BB3BCC21995302D23431FAEA /* ShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0E6B6613CCACFEAAF3CFF768 /* RecipeKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RecipeKit; path = RecipeKit; sourceTree = SOURCE_ROOT; };
+		46BA930C020855F58D112FBA /* ShareExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		50CB354FF6B0B50661F91182 /* RecipePocket.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RecipePocket.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F88D46CEDE0777C817CD9558 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		012DC5B0C687692826C1D19B /* ShareExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
+		2FBE7FDC21D293D8517665C8 /* RecipePocket */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = RecipePocket;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		68CD112344E4231416C181D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5836B25BDE24EF4F6912960A /* RecipeCore in Frameworks */,
+				9B5F62E39F8685DE8B749C1F /* RecipeData in Frameworks */,
+				9B6A4B1BC920483AC67E2B7D /* RecipeUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CF80AF93441A583ECE5E09DD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9FDD427CAFD62C47D6BD521F /* RecipeCore in Frameworks */,
+				0DA2B681239AB1CD542374D5 /* RecipeData in Frameworks */,
+				8307023EF48AB99A65DFF20B /* RecipeUI in Frameworks */,
+				BDAE68C8AE42521A34B40E2B /* FirebaseAnalyticsCore in Frameworks */,
+				41EE9CDAE756D7C99ACA040E /* FirebaseCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00B1F5E3B7D81D631BCD6EB1 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				F88D46CEDE0777C817CD9558 /* Project.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		4CDF01D084CF39A52C838E2D /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				0E6B6613CCACFEAAF3CFF768 /* RecipeKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		7CB12AF97330FDEFB8068F2C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				50CB354FF6B0B50661F91182 /* RecipePocket.app */,
+				46BA930C020855F58D112FBA /* ShareExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A53F3FE145EA28E97D61C873 = {
+			isa = PBXGroup;
+			children = (
+				00B1F5E3B7D81D631BCD6EB1 /* Config */,
+				4CDF01D084CF39A52C838E2D /* Packages */,
+				2FBE7FDC21D293D8517665C8 /* RecipePocket */,
+				012DC5B0C687692826C1D19B /* ShareExtension */,
+				7CB12AF97330FDEFB8068F2C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9E26DCEF83CE1E1C868C75CA /* RecipePocket */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 273E24E401F386D9C3F7014E /* Build configuration list for PBXNativeTarget "RecipePocket" */;
+			buildPhases = (
+				D026AA9E56D15FC47F8401DC /* 公開用の設定を確認 */,
+				340E572F4F8E72D3DC7E6CAE /* Sources */,
+				C2009E085F191BC93BDEFF79 /* Resources */,
+				CF80AF93441A583ECE5E09DD /* Frameworks */,
+				EA4D080593CED7F5A1BEE71B /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3EB03B5D5417D79A116EFB37 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2FBE7FDC21D293D8517665C8 /* RecipePocket */,
+			);
+			name = RecipePocket;
+			packageProductDependencies = (
+				F8CD3883022EF665D3248774 /* RecipeCore */,
+				08176C446612EB248B2B3F2C /* RecipeData */,
+				4D8D954B4D31115125C42A9D /* RecipeUI */,
+				433B7FC1E1175A0CE3BC311F /* FirebaseAnalyticsCore */,
+				441045DC9225688A3189E7CE /* FirebaseCore */,
+			);
+			productName = RecipePocket;
+			productReference = 50CB354FF6B0B50661F91182 /* RecipePocket.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A647CDCD3D328D98AC033BD2 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61D0D662890EE4802B2CD7C5 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				9BEDB380DD7C3F7151B6F05E /* Sources */,
+				A385F3BA56AE247F21CBA2C7 /* Resources */,
+				68CD112344E4231416C181D9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				012DC5B0C687692826C1D19B /* ShareExtension */,
+			);
+			name = ShareExtension;
+			packageProductDependencies = (
+				9939C853505A6802F8B3336E /* RecipeCore */,
+				C56767E50E6302CF5C94F922 /* RecipeData */,
+				D9556D3476AB399E1AC0D42E /* RecipeUI */,
+			);
+			productName = ShareExtension;
+			productReference = 46BA930C020855F58D112FBA /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8D48BE356E9E339A02FC9BC7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					9E26DCEF83CE1E1C868C75CA = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					A647CDCD3D328D98AC033BD2 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 15C54A62F83E69B26331BA50 /* Build configuration list for PBXProject "RecipePocket" */;
+			developmentRegion = ja;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				ja,
+			);
+			mainGroup = A53F3FE145EA28E97D61C873;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CD626CB03F0C165990CCAEBB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E8D2FF1C0ED3DAB247D38DF1 /* XCLocalSwiftPackageReference "RecipeKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7CB12AF97330FDEFB8068F2C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9E26DCEF83CE1E1C868C75CA /* RecipePocket */,
+				A647CDCD3D328D98AC033BD2 /* ShareExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A385F3BA56AE247F21CBA2C7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C2009E085F191BC93BDEFF79 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D026AA9E56D15FC47F8401DC /* 公開用の設定を確認 */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "公開用の設定を確認";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# App Store 向けのアーカイブで、git 管理外の値を入れ忘れていないかを確かめる\nif [ \"${ACTION}\" = \"install\" ]; then\n  missing=\"\"\n  [ -n \"${DEVELOPMENT_TEAM}\" ] || missing=\"${missing} DEVELOPMENT_TEAM\"\n  [ -n \"${OPERATOR_NAME}\" ] || missing=\"${missing} OPERATOR_NAME\"\n  [ -n \"${CONTACT_EMAIL}\" ] || missing=\"${missing} CONTACT_EMAIL\"\n  if [ -n \"${missing}\" ]; then\n    echo \"error: Config/Local.xcconfig に${missing} がありません。docs/release-checklist.md の手順で設定してください\"\n    exit 1\n  fi\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		340E572F4F8E72D3DC7E6CAE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9BEDB380DD7C3F7151B6F05E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3EB03B5D5417D79A116EFB37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A647CDCD3D328D98AC033BD2 /* ShareExtension */;
+			targetProxy = FDBF089E931387EDACCBF08E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		42B32BEFE90BB8519B055EB0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F88D46CEDE0777C817CD9558 /* Project.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		9226154FEB8FBF0670CFE4A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/ShareExtension.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/ShareExtension-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "レシピぽけっと";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.shin4488.cookingrecipes.ShareExtension;
+				PRODUCT_NAME = ShareExtension;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9296038A5F148B424C36C5CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/ShareExtension.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/ShareExtension-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "レシピぽけっと";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.shin4488.cookingrecipes.ShareExtension;
+				PRODUCT_NAME = ShareExtension;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		95ED19A49935EABF03D9C89F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/RecipePocket.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/RecipePocket-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "レシピぽけっと";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shin4488.cookingrecipes;
+				PRODUCT_NAME = RecipePocket;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B6344DCFD2BDA4103B50A813 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F88D46CEDE0777C817CD9558 /* Project.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B912068570DD90D4E3FCA737 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/RecipePocket.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/RecipePocket-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "レシピぽけっと";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shin4488.cookingrecipes;
+				PRODUCT_NAME = RecipePocket;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		15C54A62F83E69B26331BA50 /* Build configuration list for PBXProject "RecipePocket" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6344DCFD2BDA4103B50A813 /* Debug */,
+				42B32BEFE90BB8519B055EB0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		273E24E401F386D9C3F7014E /* Build configuration list for PBXNativeTarget "RecipePocket" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				95ED19A49935EABF03D9C89F /* Debug */,
+				B912068570DD90D4E3FCA737 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		61D0D662890EE4802B2CD7C5 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9226154FEB8FBF0670CFE4A2 /* Debug */,
+				9296038A5F148B424C36C5CF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		E8D2FF1C0ED3DAB247D38DF1 /* XCLocalSwiftPackageReference "RecipeKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = RecipeKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CD626CB03F0C165990CCAEBB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 13.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		08176C446612EB248B2B3F2C /* RecipeData */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecipeData;
+		};
+		433B7FC1E1175A0CE3BC311F /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CD626CB03F0C165990CCAEBB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		441045DC9225688A3189E7CE /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CD626CB03F0C165990CCAEBB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		4D8D954B4D31115125C42A9D /* RecipeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecipeUI;
+		};
+		9939C853505A6802F8B3336E /* RecipeCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecipeCore;
+		};
+		C56767E50E6302CF5C94F922 /* RecipeData */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecipeData;
+		};
+		D9556D3476AB399E1AC0D42E /* RecipeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecipeUI;
+		};
+		F8CD3883022EF665D3248774 /* RecipeCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecipeCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 8D48BE356E9E339A02FC9BC7 /* Project object */;
+}
