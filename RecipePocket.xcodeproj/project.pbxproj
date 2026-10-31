@@ -68,6 +68,15 @@
 			path = RecipePocket;
 			sourceTree = "<group>";
 		};
+		5E2290FFA774476696B0DA22 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +137,7 @@
 				4CDF01D084CF39A52C838E2D /* Packages */,
 				2FBE7FDC21D293D8517665C8 /* RecipePocket */,
 				012DC5B0C687692826C1D19B /* ShareExtension */,
+				5E2290FFA774476696B0DA22 /* Shared */,
 				7CB12AF97330FDEFB8068F2C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -152,6 +162,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				2FBE7FDC21D293D8517665C8 /* RecipePocket */,
+				5E2290FFA774476696B0DA22 /* Shared */,
 			);
 			name = RecipePocket;
 			packageProductDependencies = (
@@ -179,6 +190,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				012DC5B0C687692826C1D19B /* ShareExtension */,
+				5E2290FFA774476696B0DA22 /* Shared */,
 			);
 			name = ShareExtension;
 			packageProductDependencies = (
@@ -368,6 +380,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Config/ShareExtension.entitlements;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/ShareExtension-Info.plist";
@@ -389,6 +402,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Config/ShareExtension.entitlements;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/ShareExtension-Info.plist";

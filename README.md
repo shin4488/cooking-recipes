@@ -22,6 +22,7 @@ Firebase の設定ファイル（`RecipePocket/Resources/GoogleService-Info.plis
 | --- | --- |
 | `RecipePocket/` | 本体アプリの画面と、一覧・検索・タイトル取得の状態 |
 | `ShareExtension/` | 共有シートから保存する画面 |
+| `Shared/` | 本体と共有拡張の両方に入れる素材（アクセントカラー） |
 | `RecipeKit/Sources/RecipeCore/` | URLの検証と重複判定、タグ、検索、対応サイトからのタイトル取得。画面と保存に依存しない |
 | `RecipeKit/Sources/RecipeData/` | 端末内の保存（SwiftData）。本体と共有拡張が App Group の同じ保存先を使う |
 | `RecipeKit/Sources/RecipeUI/` | 本体と共有拡張が使う登録・編集のフォーム |
