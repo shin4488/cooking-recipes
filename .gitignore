@@ -11,3 +11,9 @@ build/
 # 公開前に入れる値（Team ID・運営者名・連絡先）と Firebase の設定ファイルは git で管理しない
 Config/Local.xcconfig
 RecipePocket/Resources/GoogleService-Info.plist
+
+# 公開する Web ページは運営者名・問い合わせ先を含めて web/build.sh で作るため、出力と Firebase の手元の設定は git で管理しない
+web/public/
+web/.firebase/
+web/.firebaserc
+firebase-debug.log

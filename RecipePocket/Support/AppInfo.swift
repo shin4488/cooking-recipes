@@ -6,6 +6,11 @@ enum AppInfo {
     static var operatorName: String? { infoValue("RPOperatorName") }
     static var contactEmail: String? { infoValue("RPContactEmail") }
 
+    /// 利用条件・プライバシー説明に載せる運営者。公開前の値を入れていないビルドでは「未設定」と表示する
+    static var policyOperator: PolicyText.Operator {
+        PolicyText.Operator(name: operatorName ?? "未設定", contactEmail: contactEmail ?? "未設定")
+    }
+
     static var version: String {
         let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "-"
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "-"

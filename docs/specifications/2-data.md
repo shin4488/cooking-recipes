@@ -101,7 +101,7 @@ CloudKitの[プライベートデータベース](https://developer.apple.com/do
 | --- | --- |
 | 各サイト | タイトル取得・閲覧に必要なURL・IP等。本人のタイトル・タグは送らない |
 | Google LLC等（AdMob・UMP） | IP・端末識別子・広告の表示や操作・診断情報・同意状況等。広告配信・効果測定・不正対策・同意管理に使用。非パーソナライズ広告でも送信がある。[SDKの開示](https://developers.google.com/admob/ios/privacy/data-disclosure)・[利用目的](https://business.safety.google/intl/ja/tba-jp/) |
-| Google LLC等（Google Analytics） | 画面表示・登録・検索などの操作、アプリ・端末情報、解析用のアプリ識別子、IPから推定する地域等。利用状況の把握と改善に使う。[送信情報の説明](https://support.google.com/analytics/answer/10285841) |
+| Google LLC等（Google Analytics） | 画面表示・登録・検索などの操作、アプリ・端末情報、解析用のアプリ識別子、IPから推定する地域等。利用状況の把握と改善に使う。利用者ごと・操作ごとの記録の保持期間は2か月とし、集計値だけを残す。[送信情報の説明](https://support.google.com/analytics/answer/10285841)・[データの保持](https://support.google.com/analytics/answer/7667196?hl=ja) |
 | 運営者（問い合わせ先） | 本人が確認した相談・広告報告と返信先。対応に必要な間だけ保管し、不要になれば削除する。レシピ情報は自動添付しない。[利用目的の明示](https://www.ppc.go.jp/all_faq_index/faq1-q4-17/)・[保管の考え方](https://www.ppc.go.jp/all_faq_index/faq1-q5-4/) |
 | Apple（バージョン2以降） | 本人の操作によるバックアップ・復元用のデータ |
 
