@@ -19,8 +19,9 @@ public struct RecipeFormView: View {
 
     public var body: some View {
         Form {
-            Section {
-                if model.urlChoices.count > 1 {
+            // 選んだURLは下の入力欄で直せる。入力欄が選択肢の1つに見えないよう、別の欄に分ける
+            if model.urlChoices.count > 1 {
+                Section("共有されたURL（1つ選ぶ）") {
                     Picker("保存するURL", selection: $model.url) {
                         ForEach(model.urlChoices, id: \.self) { choice in
                             Text(choice)
@@ -32,6 +33,9 @@ public struct RecipeFormView: View {
                     .pickerStyle(.inline)
                     .labelsHidden()
                 }
+            }
+
+            Section {
                 TextField("https://", text: $model.url, axis: .vertical)
                     .lineLimit(1...4)
                     .focused($focusedField, equals: .url)
@@ -52,7 +56,7 @@ public struct RecipeFormView: View {
                     .labelStyle(.titleAndIcon)
                 }
             } header: {
-                Text(model.urlChoices.count > 1 ? "URL（複数から1つ選ぶ）" : "URL（必須）")
+                Text(model.urlChoices.count > 1 ? "保存するURL（必須）" : "URL（必須）")
             } footer: {
                 if let error = model.urlError {
                     ErrorText(error)
