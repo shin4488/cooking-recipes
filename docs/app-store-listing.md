@@ -48,7 +48,9 @@ Safari などで気になるレシピを見つけたら、共有ボタンから�
 
 【データについて】
 会員登録やログインはいりません。レシピのデータは、お使いの iPhone の中にだけ保存されます。
-アプリをよくするために、どの画面を開いたかなどの利用状況を送っています。送りたくないときは、設定からいつでも止められます。利用状況には、保存したレシピの URL・タイトル・タグや、検索した言葉は含めません。
+アプリをよくするために、どの画面を開いたかなどの利用状況を送っています。送りたくないときは、設定からいつでも止められます。
+一覧の画面の下には広告が表示されます。
+保存したレシピの URL・タイトル・タグや、検索した言葉は、利用状況にも広告にも使いません。
 ```
 
 キーワード（100文字まで、カンマ区切り）:
@@ -84,7 +86,7 @@ Apple は、アプリが端末の外へ送ったデータを、運営者や、�
 - その他の診断データ: Firebase Installations のプライバシーマニフェストが、関連付けない・トラッキングに使わない・アナリティクス目的として申告している。
 - Google Analytics の SDK（GoogleAppMeasurement）にはプライバシーマニフェストが含まれないため、Google Analytics の分は Google の説明から当てはめた。この SDK は、Apple がプライバシーマニフェストを必須とする [SDK の一覧](https://developer.apple.com/support/third-party-SDK-requirements/)に含まれていない。
 - ユーザーに関連付けるか: Apple は、直接の識別子を除いて集め、集めた後に本人や他のデータと結び付けなければ、関連付けないものとする。Google Analytics の分は、アプリがユーザー ID を設定せず、Google シグナルを無効にするため関連付けない。Google Mobile Ads SDK は、製品の操作・広告データ・デバイス ID・おおよその位置情報を「関連付ける」と申告しているため、この4種類は「はい」と答える。関係する法律で個人情報に当たるものは関連付けるものとされるが、仕様の[法的な整理](specifications/2-data.md#法的な整理)では、広告・解析の識別子を個人関連情報として扱う。
-- トラッキングに使うか: Apple は、集めたデータを広告や広告の効果測定のために他社のアプリ・サイトのデータと結び付けることと、データブローカーに渡すことをトラッキングとする。Google Analytics の分は、広告識別子を使わない `FirebaseAnalyticsCore` を使い、他社のデータと結び付けず、データブローカーにも渡さない。広告の分は、ATT（App Tracking Transparency）で許可を求めないため、iOS 14.5 以降では広告識別子が0だけの値になる（[Apple の説明](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier)）。さらに、パーソナライズしない広告だけを求める（[Google の説明](https://developers.google.com/admob/ios/targeting?hl=ja)）。このため「いいえ」と答える案にする。ただし Google Mobile Ads SDK のプライバシーマニフェストは、デバイス ID を「トラッキングに使う」と申告している。提出する前に、Xcode の Organizer でアーカイブを Control キーを押しながらクリックし、「Generate Privacy Report」で SDK の申告をまとめた報告を作り（[Apple の説明](https://developer.apple.com/documentation/bundleresources/describing-data-use-in-privacy-manifests)）、この回答でよいかを確かめる。
+- トラッキングに使うか: Apple は、集めたデータを広告や広告の効果測定のために他社のアプリ・サイトのデータと結び付けることと、データブローカーに渡すことをトラッキングとする。Google Analytics の分は、広告識別子を使わない `FirebaseAnalyticsCore` を使い、他社のデータと結び付けず、データブローカーにも渡さない。広告の分は、ATT（App Tracking Transparency）で許可を求めないため、iOS 14.5 以降では広告識別子が0だけの値になる（[Apple の説明](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier)）。さらに、パーソナライズしない広告だけを求める（[Google の説明](https://developers.google.com/admob/ios/targeting?hl=ja)）。このため「いいえ」と答える。App Store Connect の質問の説明も、デバイス ID をトラッキングに使うと申告するのは、広告識別子（IDFA）へのアクセスを求める場合としている。ただし Google Mobile Ads SDK のプライバシーマニフェストは、デバイス ID を「トラッキングに使う」と申告している。提出する前に、Xcode の Organizer でアーカイブを Control キーを押しながらクリックし、「Generate Privacy Report」で SDK の申告をまとめた報告を作り（[Apple の説明](https://developer.apple.com/documentation/bundleresources/describing-data-use-in-privacy-manifests)）、この回答でよいかを確かめる。
 - 問い合わせと不適切な広告の報告のメールは申告しない。アプリは `mailto:` でメールアプリを開くだけで、メールは利用者がメールアプリから送り、アプリからは何も送らないため、上の「収集」に当たらない。Apple の説明に `mailto:` の扱いは書かれていない。アプリが送る問い合わせフォームでも、任意で、主な機能と関係がなく、ほかの条件を満たすものは、申告しなくてよい例に挙げている。
 
 ## 年齢制限の質問に答えるための事実
@@ -94,7 +96,7 @@ Apple は、アプリが端末の外へ送ったデータを、運営者や、�
 | 暴力・性的な表現・ギャンブルなど | ない |
 | アプリの中で自由に Web を見る機能 | ない。レシピのページは Safari などの別のアプリで開く |
 | 利用者が作った内容の公開・共有 | ない。保存した内容は本人の端末にだけあり、ほかの人には見えない |
-| 広告 | あり。レシピの一覧の画面の下に、AdMob のバナー広告を1つ表示する。年齢制限の質問の「Advertising」に当たる。Apple の定義では、4+ の App にも広告は含まれ得る（[Apple の説明](https://developer.apple.com/help/app-store-connect/reference/app-information/age-ratings-values-and-definitions/)）。表示する広告の内容の上限は、AdMob の「広告レーティングを管理」で選ぶ（[公開前の作業](release-checklist.md#広告を始めるときの作業)） |
+| 広告 | あり。レシピの一覧の画面の下に、AdMob のバナー広告を1つ表示する。年齢制限の質問の「機能」にある「広告」（アプリ内の製品またはサービスの有料プロモーション）に「はい」と答える。App Store Connect で答えて確かめたところ、算出される年齢制限は 4+ のまま。表示する広告の内容の上限は、AdMob の「広告レーティングを管理」で「G」にする（[公開前の作業](release-checklist.md#作業)の手順8） |
 | 端末の位置情報サービス・連絡先などの利用 | ない |
 
 ## コンテンツ配信権（回答案）
