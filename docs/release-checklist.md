@@ -42,7 +42,7 @@ cp Config/Local.example.xcconfig Config/Local.xcconfig
 | 13 | Xcode で Product > Archive を行い、App Store Connect へアップロードする | アーカイブが設定の確認で止まらない。Organizer でアーカイブを Control キーを押しながらクリックし、「Generate Privacy Report」で SDK の申告をまとめた報告を作り（[Apple の説明](https://developer.apple.com/documentation/bundleresources/describing-data-use-in-privacy-manifests)）、App のプライバシーの回答と合っている |
 | 14 | App Store Connect で審査に提出し、承認されたら公開する | 審査担当からの連絡先を入れた |
 | 15 | 公開した後、AdMob の［アプリの設定］の「アプリストア」で［ストアを追加］を押し、App Store の「レシピぽけっと」とつなぐ（[Google の説明](https://support.google.com/admob/answer/10037806?hl=ja)）。公開の直後は、つなげるようになるまで24〜48時間、まれに1週間ほどかかる | app-ads.txt の確認（[Google の説明](https://support.google.com/admob/answer/14538460?hl=ja)）と、アプリの準備状況の審査（通常2〜3日、[Google の説明](https://support.google.com/admob/answer/10564477?hl=ja)）が済み、状態が「準備完了」になった。それまでは広告の配信が制限される |
-| 16 | AdMob から本人確認（身分証明書）と住所の確認（郵送で届く PIN）を求められたら、期限までに済ませる（[Google の説明](https://support.google.com/admob/answer/2772208?hl=ja)） | 本人確認は45日以内、PIN は届いてから4か月以内に済ませた。済ませないと広告の配信が止まる |
+| 16 | AdMob から本人確認（身分証明書）と住所の確認（郵送で届く PIN）を求められたら、期限までに済ませる（[確認を求める時期の説明](https://support.google.com/admob/answer/2772208?hl=ja)） | 本人確認は求められてから45日以内（[Google の説明](https://support.google.com/admob/answer/13030080?hl=ja)）、住所の確認は PIN の発行日から4か月以内（[Google の説明](https://support.google.com/admob/answer/2772302?hl=ja)）に済ませた。済ませないと広告の配信が止まる |
 
 `Config/RecipePocket-Info.plist` の `SKAdNetworkItems` は、Google の[クイックスタート](https://developers.google.com/admob/ios/quick-start?hl=ja)にある一覧（2026年11月1日に確認した50件）に合わせた。
 
