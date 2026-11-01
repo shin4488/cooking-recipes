@@ -1,6 +1,7 @@
 import RecipeCore
 import RecipeUI
 import SwiftUI
+import UIKit
 
 /// レシピ一覧。検索・並べ替え・各操作の起点
 struct RecipeListView: View {
@@ -11,6 +12,7 @@ struct RecipeListView: View {
     @State private var isReordering = false
     @State private var expandedTagIDs: Set<UUID> = []
     @State private var highlightedID: UUID?
+    @State private var isKeyboardVisible = false
 
     var body: some View {
         NavigationStack {
@@ -33,9 +35,11 @@ struct RecipeListView: View {
         .sheet(isPresented: $showsSettings) {
             SettingsView()
         }
-        .overlay(alignment: .bottom) {
-            // 設定を開いている間は、設定の画面に表示する
-            if !showsSettings { ToastView() }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            isKeyboardVisible = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            isKeyboardVisible = false
         }
         .analyticsScreen(.recipeList)
     }
@@ -61,8 +65,16 @@ struct RecipeListView: View {
         .listStyle(.plain)
         .environment(\.editMode, .constant(isReordering ? .active : .inactive))
         .overlay { emptyState }
+        .overlay(alignment: .bottom) {
+            // 設定を開いている間は、設定の画面に表示する
+            if !showsSettings { ToastView() }
+        }
         .safeAreaInset(edge: .top, spacing: 0) {
             SearchBar()
+        }
+        // 広告は一覧の下にだけ出し、一覧の行と完了の表示を広告に重ねない。検索の入力中と、登録・編集や設定を開いている間は出さない
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            AdBannerView(isHidden: isKeyboardVisible || editor != nil || showsSettings)
         }
     }
 

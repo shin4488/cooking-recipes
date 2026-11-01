@@ -10,9 +10,12 @@ App Store で公開する前に入れる値と、行う作業。git で管理し
 | 運営者名 | `Config/Local.xcconfig` の `OPERATOR_NAME` | 管理しない | 設定の「プライバシーと外部送信」「利用条件」と、公開する Web ページ |
 | 問い合わせ先のメールアドレス | `Config/Local.xcconfig` の `CONTACT_EMAIL` | 管理しない | 設定の「問い合わせ（メール）」、上の2画面、公開する Web ページ |
 | Firebase の設定ファイル | `RecipePocket/Resources/GoogleService-Info.plist` | 管理しない | 解析の送信。置かなければ送信しない |
+| AdMob のアプリ ID | `Config/Local.xcconfig` の `ADMOB_APP_ID` | 管理しない | Info.plist の `GADApplicationIdentifier`。広告と同意の確認に使う |
+| 一覧のバナーの広告ユニット ID | `Config/Local.xcconfig` の `ADMOB_BANNER_UNIT_ID` | 管理しない | 一覧の下に出す広告 |
+| AdMob のパブリッシャー ID | `Config/Local.xcconfig` の `ADMOB_PUBLISHER_ID` | 管理しない | `web/build.sh` で作る `app-ads.txt` |
 | 利用条件・プライバシー説明の文面 | `RecipePocket/Support/PolicyText.swift` | 管理する | 設定の「利用条件」「プライバシーと外部送信」と、公開する Web ページ |
 
-`Config/Local.xcconfig` は、`Config/Local.example.xcconfig` をコピーして作る。App Store 向けのアーカイブ（Product > Archive）では、`DEVELOPMENT_TEAM`・`OPERATOR_NAME`・`CONTACT_EMAIL` のどれかが空ならビルドを止める。
+`Config/Local.xcconfig` は、`Config/Local.example.xcconfig` をコピーして作る。App Store 向けのアーカイブ（Product > Archive）では、`DEVELOPMENT_TEAM`・`OPERATOR_NAME`・`CONTACT_EMAIL`・`ADMOB_APP_ID`・`ADMOB_BANNER_UNIT_ID` のどれかが空のときと、AdMob の ID が Google のテスト用の ID のときに、ビルドを止める。Debug ビルドは、開発中の端末で本番の広告を表示・タップしないよう、`Config/Local.xcconfig` の値にかかわらず Google のテスト用の ID（[Google の説明](https://developers.google.com/admob/ios/test-ads?hl=ja)）を使う。Release ビルド（Xcode の Profile を含む）は `Config/Local.xcconfig` の ID を使い、`ADMOB_APP_ID` が空だと Google Mobile Ads SDK が起動の直後に例外（`GADInvalidInitializationException`）でアプリを止める。
 
 ```bash
 cp Config/Local.example.xcconfig Config/Local.xcconfig
@@ -20,17 +23,28 @@ cp Config/Local.example.xcconfig Config/Local.xcconfig
 
 ## 作業
 
+広告（AdMob のバナー）は最初の版から出す。AdMob のアプリは公開前に作って ID をアーカイブに入れ、公開した後に App Store の掲載情報とつなぐ。
+
 | 順 | 作業 | 確かめること |
 | --- | --- | --- |
 | 1 | Apple Developer Program に加入し、Team ID を `Config/Local.xcconfig` に入れる | Xcode の Signing & Capabilities で、本体と共有拡張の両方に App Group `group.com.shin4488.cookingrecipes` が有効になっている |
 | 2 | Firebase コンソールでプロジェクトを作り、Google Analytics を有効にする。iOS アプリ（Bundle ID `com.shin4488.cookingrecipes`）を登録し、`GoogleService-Info.plist` を上の場所に置く | Google Analytics のプロパティで、Google シグナルと広告のパーソナライズを無効にする（仕様の「解析データの広告利用は無効にする」）。管理の「データの保持」で、イベントデータとユーザーデータの保持をどちらも14か月にし、「新しいユーザー アクティビティのたびにリセット」をオンにする（プライバシー説明の「保存期間と削除」と同じ扱い） |
-| 3 | [Google の同意取得方針](https://business.safety.google/intl/ja/appi/)に基づき、提供する項目・期間と確認した内容を記録する | 仕様の [個人関連情報](specifications/2-data.md#法的な整理) の扱いと合っている |
-| 4 | 利用条件・プライバシー説明の下書きを確定し、Web に公開する。`web/build.sh` で、`Config/Local.xcconfig` の運営者名・問い合わせ先を入れたページを `web/public` に作り、下の「Web ページの公開」の手順で Firebase Hosting に公開する | `https://cooking-recipes-ab42e.web.app/privacy`・`/terms`・`/support` が開ける。プライバシー説明に、[審査ガイドライン 5.1.1(i)](https://developer.apple.com/app-store/review/guidelines/#data-collection-and-storage) が求める、集める情報と使い道・第三者の扱い・保存期間と削除の求め方・同意の取り消し方がある |
-| 5 | Debug ビルドに起動引数 `-FIRDebugEnabled` を付け、Firebase の DebugView で送信内容を確かめる | 画面名、操作の種類、登録時に付けたタグの数、ごみ箱を空にした件数、検索条件の追加元（タグか入力か）だけが届き、URL・タイトル・タグ名・検索語が含まれない |
-| 6 | 実機で確かめる | iPhone SE（第3世代）で[性能目標](specifications/3-technology.md#非機能要件)を満たす。Safari・Chrome の共有から保存できる。設定の「問い合わせ（メール）」からメールを作れる。VoiceOver・文字サイズの変更・ダーク表示で操作できる |
-| 7 | App Store Connect でアプリを登録する。入れる文面・回答・スクリーンショットは [App Store に入れる内容](app-store-listing.md) の下書きを使う | プライバシーポリシーのURL、サポートURL（手順4のページ。[審査ガイドライン 1.5](https://developer.apple.com/app-store/review/guidelines/#developer-information) により連絡方法を載せる）、App のプライバシー（Firebase の[データ開示の案内](https://firebase.google.com/docs/ios/app-store-data-collection)に合わせる）、年齢制限、コンテンツ配信権、スクリーンショットを入れた |
-| 8 | Xcode で Product > Archive を行い、App Store Connect へアップロードする | アーカイブが設定の確認で止まらない |
-| 9 | App Store Connect で審査に提出し、承認されたら公開する | 審査担当からの連絡先を入れた |
+| 3 | [AdMob に申し込む](https://support.google.com/admob/answer/7356219?hl=ja)。Google アカウントでログインし、国または地域（後から変えられない）を選び、お支払い情報（個人か組織か、銀行口座と同じ氏名、郵便を受け取れる住所、電話番号）を入れて、アカウントの確認を受ける（[お支払い情報の説明](https://support.google.com/admob/answer/12835021?hl=ja)） | アカウントの確認が済んだ。Google の説明では、通常24時間以内、まれに最大2週間かかる。お支払い情報を入れるまでは、広告は出ず、アプリの審査も始まらない |
+| 4 | AdMob の［アプリ］→［アプリを追加］で iOS を選び、アプリストアに登録されているかの質問で［いいえ］を選んで、アプリ名「レシピぽけっと」で追加する（[Google の説明](https://support.google.com/admob/answer/9989980?hl=ja)の「非公開アプリをセットアップする」） | AdMob のアプリを Firebase にはリンクしない（仕様の「解析データの広告利用は無効にする」、[リンクの説明](https://support.google.com/admob/answer/6383165?hl=ja)） |
+| 5 | 追加したアプリの「広告ユニット」で、バナーの広告ユニットを1つ作る。「詳細設定」の「広告の種類」は「テキスト、イメージ、リッチメディア」だけにして「動画」を外し、「自動更新」は Google が勧める、Google が最適化した頻度にする（[Google の説明](https://support.google.com/admob/answer/3245199?hl=ja)） | 自動更新が無効になっていない。アプリは表示中のバナーを自分では読み込み直さず、SDK が AdMob の自動更新の設定に従って入れ替える（[Google の説明](https://developers.google.com/admob/ios/banner?hl=ja)） |
+| 6 | アプリ ID と広告ユニット ID（[確かめ方](https://support.google.com/admob/answer/7356431?hl=ja)）、AdMob の「設定」にあるパブリッシャー ID を、`Config/Local.xcconfig` の `ADMOB_APP_ID`・`ADMOB_BANNER_UNIT_ID`・`ADMOB_PUBLISHER_ID` に入れる | アプリ ID は `ca-app-pub-…~…`、広告ユニット ID は `ca-app-pub-…/…`、パブリッシャー ID は `pub-…` の形になっている |
+| 7 | AdMob の「プライバシーとメッセージ」で、欧州の規制に関するメッセージを作って公開する（[Google の説明](https://support.google.com/admob/answer/10113207?hl=ja)）。欧州経済領域・英国・スイスから使う人に、広告の同意を求めるため。表示するアプリに「レシピぽけっと」とプライバシーポリシーの URL を入れ、断りやすいよう「同意しない」をすべての国でオンにし、言語に日本語を足す | Debug ビルドに起動引数 `-UMPDebugGeographyEEA` を付けてシミュレータで起動すると、作ったメッセージが出る。選んだ後、設定に「広告の同意の設定」が出て、選び直せる |
+| 8 | [Google の同意取得方針](https://business.safety.google/intl/ja/appi/)に基づき、Google Analytics と AdMob・UMP に提供する項目・期間と、確かめた内容を記録する | 仕様の [個人関連情報](specifications/2-data.md#法的な整理) の扱いと合っている |
+| 9 | 利用条件・プライバシー説明の下書きを確定し、Web に公開する。`web/build.sh` で、`Config/Local.xcconfig` の運営者名・問い合わせ先・パブリッシャー ID を入れたページと `app-ads.txt` を `web/public` に作り、下の「Web ページの公開」の手順で Firebase Hosting に公開する | `https://cooking-recipes-ab42e.web.app/privacy`・`/terms`・`/support` が開ける。プライバシー説明に、[審査ガイドライン 5.1.1(i)](https://developer.apple.com/app-store/review/guidelines/#data-collection-and-storage) が求める、集める情報と使い道・第三者の扱い・保存期間と削除の求め方・同意の取り消し方がある。`/app-ads.txt` に `google.com, pub-…, DIRECT, f08c47fec0942fa0` の1行が出る（[Google の説明](https://developers.google.com/admob/ios/app-ads?hl=ja)） |
+| 10 | Debug ビルドに起動引数 `-FIRDebugEnabled` を付け、Firebase の DebugView で送信内容を確かめる | 画面名、操作の種類、登録時に付けたタグの数、ごみ箱を空にした件数、検索条件の追加元（タグか入力か）と、広告の表示などで自動で記録されるイベント（`ad_impression` など、[Google の説明](https://support.google.com/analytics/answer/9234069?hl=ja)）だけが届き、URL・タイトル・タグ名・検索語が含まれない |
+| 11 | 実機で確かめる。Debug ビルドの広告は、Google のテスト用の ID で出る | iPhone SE（第3世代）で[性能目標](specifications/3-technology.md#非機能要件)を満たす。Safari・Chrome の共有から保存できる。設定の「問い合わせ（メール）」「不適切な広告を報告（メール）」からメールを作れる。VoiceOver・文字サイズの変更・ダーク表示で操作できる。広告は一覧の下にだけ出て、登録・編集の画面・設定・検索の入力中には出ず、読み込めないときは場所を取らない |
+| 12 | App Store Connect でアプリを登録する。入れる文面・回答・スクリーンショットは [App Store に入れる内容](app-store-listing.md) の下書きを使う | プライバシーポリシーのURL、サポートURL（手順9のページ。[審査ガイドライン 1.5](https://developer.apple.com/app-store/review/guidelines/#developer-information) により連絡方法を載せる）、マーケティングURL、App のプライバシー（Firebase の[データ開示の案内](https://firebase.google.com/docs/ios/app-store-data-collection)と AdMob の [App Store のデータ開示](https://developers.google.com/admob/ios/privacy/data-disclosure?hl=ja)に合わせる）、年齢制限（広告は「はい」）、コンテンツ配信権、スクリーンショットを入れた |
+| 13 | Xcode で Product > Archive を行い、App Store Connect へアップロードする | アーカイブが設定の確認で止まらない。Organizer でアーカイブを Control キーを押しながらクリックし、「Generate Privacy Report」で SDK の申告をまとめた報告を作り（[Apple の説明](https://developer.apple.com/documentation/bundleresources/describing-data-use-in-privacy-manifests)）、App のプライバシーの回答と合っている |
+| 14 | App Store Connect で審査に提出し、承認されたら公開する | 審査担当からの連絡先を入れた |
+| 15 | 公開した後、AdMob の［アプリの設定］の「アプリストア」で［ストアを追加］を押し、App Store の「レシピぽけっと」とつなぐ（[Google の説明](https://support.google.com/admob/answer/10037806?hl=ja)）。公開の直後は、つなげるようになるまで24〜48時間、まれに1週間ほどかかる | app-ads.txt の確認（[Google の説明](https://support.google.com/admob/answer/14538460?hl=ja)）と、アプリの準備状況の審査（通常2〜3日、[Google の説明](https://support.google.com/admob/answer/10564477?hl=ja)）が済み、状態が「準備完了」になった。それまでは広告の配信が制限される |
+| 16 | AdMob から本人確認（身分証明書）と住所の確認（郵送で届く PIN）を求められたら、期限までに済ませる（[確認を求める時期の説明](https://support.google.com/admob/answer/2772208?hl=ja)） | 本人確認は求められてから45日以内（[Google の説明](https://support.google.com/admob/answer/13030080?hl=ja)）、住所の確認は PIN の発行日から4か月以内（[Google の説明](https://support.google.com/admob/answer/2772302?hl=ja)）に済ませた。済ませないと広告の配信が止まる |
+
+`Config/RecipePocket-Info.plist` の `SKAdNetworkItems` は、Google の[クイックスタート](https://developers.google.com/admob/ios/quick-start?hl=ja)にある一覧（2026年11月1日に確認した50件）に合わせた。
 
 ## Web ページの公開
 
@@ -49,7 +63,3 @@ docker run --rm -v recipe-pocket-firebase-config:/root/.config -v recipe-pocket-
 ```
 
 使わなくなったら、上のログインのコマンドの `login --no-localhost` を `logout` に変えて実行し、`docker volume rm recipe-pocket-firebase-config recipe-pocket-npm-cache` でボリュームを消す。
-
-## このビルドに含めていないもの
-
-広告（AdMob・UMP）はまだ組み込んでいない。追加するときは、同意の扱い、プライバシー説明の送信先、Web に置く `app-ads.txt` を合わせて用意する。

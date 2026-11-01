@@ -14,20 +14,22 @@
 
 Firebase の設定ファイル（`RecipePocket/Resources/GoogleService-Info.plist`）を置かなければ、解析は送信しない。Debug ビルドでは、設定ファイルがあっても起動引数 `-FIRDebugEnabled` を付けたときだけ送信する。
 
-件数の多い一覧や検索を確かめるときは、Debug ビルドで起動引数 `-SeedRecipes 5000` を付けると、記録が空の場合に見本を5,000件入れる。App Store 用のスクリーンショットを撮るときは、`-SeedScreenshotRecipes` を付けると、実在しない見本のサイトの記録を入れる。
+広告（AdMob）は、Debug ビルドでは常に Google のテスト用の ID で一覧の下に表示する。欧州向けの同意の画面をシミュレータで確かめるときは、Debug ビルドに起動引数 `-UMPDebugGeographyEEA` を付ける。同意の選択は、アプリを削除すると消える。
+
+件数の多い一覧や検索を確かめるときは、Debug ビルドで起動引数 `-SeedRecipes 5000` を付けると、記録が空の場合に見本を5,000件入れる。App Store 用のスクリーンショットを撮るときは、`-SeedScreenshotRecipes` を付けると、実在しない見本のサイトの記録を入れ、広告を表示しない。
 
 ## 構成
 
 | 場所 | 内容 |
 | --- | --- |
-| `RecipePocket/` | 本体アプリの画面と、一覧・検索・タイトル取得の状態 |
+| `RecipePocket/` | 本体アプリの画面と、一覧・検索・タイトル取得の状態、広告と同意（`Support/AppAds.swift`・`Views/AdBannerView.swift`） |
 | `ShareExtension/` | 共有シートから保存する画面 |
 | `Shared/` | 本体と共有拡張の両方に入れる素材（アクセントカラー） |
 | `RecipeKit/Sources/RecipeCore/` | URLの検証と重複判定、タグ、検索、対応サイトからのタイトル取得。画面と保存に依存しない |
 | `RecipeKit/Sources/RecipeData/` | 端末内の保存（SwiftData）。本体と共有拡張が App Group の同じ保存先を使う |
 | `RecipeKit/Sources/RecipeUI/` | 本体と共有拡張が使う登録・編集のフォーム |
 | `Config/` | Info.plist、App Group の設定、ビルド設定（xcconfig） |
-| `web/` | 公開する Web ページ（利用条件・プライバシー説明・問い合わせ）を作る仕組み。文面はアプリと同じ `RecipePocket/Support/PolicyText.swift` を使い、運営者名・問い合わせ先は `Config/Local.xcconfig` から入れる |
+| `web/` | 公開する Web ページ（利用条件・プライバシー説明・問い合わせ）と `app-ads.txt` を作る仕組み。文面はアプリと同じ `RecipePocket/Support/PolicyText.swift` を使い、運営者名・問い合わせ先・AdMob のパブリッシャー ID は `Config/Local.xcconfig` から入れる |
 
 ## テスト
 

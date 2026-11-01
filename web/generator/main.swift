@@ -1,7 +1,7 @@
 import Foundation
 
-// アプリと同じ文面（PolicyText）から、公開する Web ページを作る。
-// 運営者名と問い合わせ先は git で管理しない Config/Local.xcconfig から読み、出力先も git で管理しない
+// アプリと同じ文面（PolicyText）から、公開する Web ページを作る。AdMob のパブリッシャー ID があれば app-ads.txt も作る。
+// 運営者名・問い合わせ先・パブリッシャー ID は git で管理しない Config/Local.xcconfig から読み、出力先も git で管理しない
 
 let arguments = CommandLine.arguments
 guard arguments.count == 3 else {
@@ -37,6 +37,17 @@ guard missing.isEmpty else {
     fail("\(configPath) に \(missing.joined(separator: "・")) がありません")
 }
 let owner = PolicyText.Operator(name: config["OPERATOR_NAME"]!, contactEmail: config["CONTACT_EMAIL"]!)
+
+/// AdMob がアプリの販売者を確かめる app-ads.txt の1行。形式は https://developers.google.com/admob/ios/app-ads に合わせる
+func appAdsLine(publisherID: String) -> String {
+    let digits = publisherID.dropFirst("pub-".count)
+    guard publisherID.hasPrefix("pub-"), !digits.isEmpty, digits.allSatisfy(\.isASCII), digits.allSatisfy(\.isNumber) else {
+        fail("ADMOB_PUBLISHER_ID は pub- と数字の形で入れてください（AdMob の「設定」で確認できます）")
+    }
+    return "google.com, \(publisherID), DIRECT, f08c47fec0942fa0\n"
+}
+let publisherID = config["ADMOB_PUBLISHER_ID"] ?? ""
+let appAds = publisherID.isEmpty ? nil : appAdsLine(publisherID: publisherID)
 
 func escape(_ text: String) -> String {
     text.replacingOccurrences(of: "&", with: "&amp;")
@@ -117,19 +128,26 @@ let pages: [String: String] = [
     "support.html": page(
         title: "問い合わせ",
         body: """
-        <p>\(escape(PolicyText.appName))についての相談や不具合の連絡は、次のアドレスへメールでお送りください。アプリの「設定」の「問い合わせ（メール）」からも送れます。</p>
+        <p>\(escape(PolicyText.appName))についての相談や不具合の連絡、不適切な広告の報告は、次のアドレスへメールでお送りください。アプリの「設定」の「問い合わせ（メール）」「不適切な広告を報告（メール）」からも送れます。</p>
         <p>\(mailLink)</p>
         <p>問い合わせで受け取った情報の扱いは、<a href="/privacy">\(escape(PolicyText.privacyTitle))</a>に記載しています。</p>
         """
     ),
 ]
 
+let appAdsURL = outputURL.appending(path: "app-ads.txt")
 do {
     try FileManager.default.createDirectory(at: outputURL, withIntermediateDirectories: true)
     for (name, html) in pages {
         try Data(html.utf8).write(to: outputURL.appending(path: name))
     }
+    if let appAds {
+        try Data(appAds.utf8).write(to: appAdsURL)
+    } else if FileManager.default.fileExists(atPath: appAdsURL.path(percentEncoded: false)) {
+        // パブリッシャー ID を消したときに、前に作った app-ads.txt を公開しないようにする
+        try FileManager.default.removeItem(at: appAdsURL)
+    }
 } catch {
     fail("Web ページを書き出せませんでした: \(error.localizedDescription)")
 }
-print("\(outputURL.path(percentEncoded: false)) に \(pages.count) ページを作りました")
+print("\(outputURL.path(percentEncoded: false)) に \(pages.count) ページ\(appAds == nil ? "" : "と app-ads.txt ")を作りました")

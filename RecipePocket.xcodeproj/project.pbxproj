@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0DA2B681239AB1CD542374D5 /* RecipeData in Frameworks */ = {isa = PBXBuildFile; productRef = 08176C446612EB248B2B3F2C /* RecipeData */; };
+		2EB06326BCB7FACC28D0763C /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = D04A1FDAC8E318D27AB90847 /* GoogleMobileAds */; };
 		41EE9CDAE756D7C99ACA040E /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 441045DC9225688A3189E7CE /* FirebaseCore */; };
 		5836B25BDE24EF4F6912960A /* RecipeCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9939C853505A6802F8B3336E /* RecipeCore */; };
 		8307023EF48AB99A65DFF20B /* RecipeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4D8D954B4D31115125C42A9D /* RecipeUI */; };
@@ -16,6 +17,7 @@
 		9FDD427CAFD62C47D6BD521F /* RecipeCore in Frameworks */ = {isa = PBXBuildFile; productRef = F8CD3883022EF665D3248774 /* RecipeCore */; };
 		BB3BCC21995302D23431FAEA /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 46BA930C020855F58D112FBA /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		BDAE68C8AE42521A34B40E2B /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 433B7FC1E1175A0CE3BC311F /* FirebaseAnalyticsCore */; };
+		C3AC87CA600FD3B52B9335A3 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = 74979861338B00F439711FDA /* GoogleUserMessagingPlatform */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,6 +101,8 @@
 				8307023EF48AB99A65DFF20B /* RecipeUI in Frameworks */,
 				BDAE68C8AE42521A34B40E2B /* FirebaseAnalyticsCore in Frameworks */,
 				41EE9CDAE756D7C99ACA040E /* FirebaseCore in Frameworks */,
+				2EB06326BCB7FACC28D0763C /* GoogleMobileAds in Frameworks */,
+				C3AC87CA600FD3B52B9335A3 /* GoogleUserMessagingPlatform in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -171,6 +175,8 @@
 				4D8D954B4D31115125C42A9D /* RecipeUI */,
 				433B7FC1E1175A0CE3BC311F /* FirebaseAnalyticsCore */,
 				441045DC9225688A3189E7CE /* FirebaseCore */,
+				D04A1FDAC8E318D27AB90847 /* GoogleMobileAds */,
+				74979861338B00F439711FDA /* GoogleUserMessagingPlatform */,
 			);
 			productName = RecipePocket;
 			productReference = 50CB354FF6B0B50661F91182 /* RecipePocket.app */;
@@ -232,6 +238,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				CD626CB03F0C165990CCAEBB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				31CD7EA4D72764A99346A06C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				BADB48EA72E83E71B11118C8 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */,
 				E8D2FF1C0ED3DAB247D38DF1 /* XCLocalSwiftPackageReference "RecipeKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -280,7 +288,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# App Store 向けのアーカイブで、git 管理外の値を入れ忘れていないかを確かめる\nif [ \"${ACTION}\" = \"install\" ]; then\n  missing=\"\"\n  [ -n \"${DEVELOPMENT_TEAM}\" ] || missing=\"${missing} DEVELOPMENT_TEAM\"\n  [ -n \"${OPERATOR_NAME}\" ] || missing=\"${missing} OPERATOR_NAME\"\n  [ -n \"${CONTACT_EMAIL}\" ] || missing=\"${missing} CONTACT_EMAIL\"\n  if [ -n \"${missing}\" ]; then\n    echo \"error: Config/Local.xcconfig に${missing} がありません。docs/release-checklist.md の手順で設定してください\"\n    exit 1\n  fi\nfi\n";
+			shellScript = "# App Store 向けのアーカイブで、git 管理外の値を入れ忘れていないか、広告に Google のテスト用の ID を使っていないかを確かめる\nif [ \"${ACTION}\" = \"install\" ]; then\n  missing=\"\"\n  [ -n \"${DEVELOPMENT_TEAM}\" ] || missing=\"${missing} DEVELOPMENT_TEAM\"\n  [ -n \"${OPERATOR_NAME}\" ] || missing=\"${missing} OPERATOR_NAME\"\n  [ -n \"${CONTACT_EMAIL}\" ] || missing=\"${missing} CONTACT_EMAIL\"\n  [ -n \"${ADMOB_APP_ID}\" ] || missing=\"${missing} ADMOB_APP_ID\"\n  [ -n \"${ADMOB_BANNER_UNIT_ID}\" ] || missing=\"${missing} ADMOB_BANNER_UNIT_ID\"\n  if [ -n \"${missing}\" ]; then\n    echo \"error: Config/Local.xcconfig に${missing} がありません。docs/release-checklist.md の手順で設定してください\"\n    exit 1\n  fi\n  case \"${ADMOB_APP_ID} ${ADMOB_BANNER_UNIT_ID}\" in\n    *ca-app-pub-3940256099942544*)\n      echo \"error: Config/Local.xcconfig の AdMob の ID が Google のテスト用の ID です。AdMob で作った ID を入れてください\"\n      exit 1\n      ;;\n  esac\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -583,6 +591,22 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		31CD7EA4D72764A99346A06C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = exactVersion;
+				version = 13.11.0;
+			};
+		};
+		BADB48EA72E83E71B11118C8 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-user-messaging-platform";
+			requirement = {
+				kind = exactVersion;
+				version = 3.1.0;
+			};
+		};
 		CD626CB03F0C165990CCAEBB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -612,6 +636,11 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = RecipeUI;
 		};
+		74979861338B00F439711FDA /* GoogleUserMessagingPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BADB48EA72E83E71B11118C8 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */;
+			productName = GoogleUserMessagingPlatform;
+		};
 		9939C853505A6802F8B3336E /* RecipeCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RecipeCore;
@@ -619,6 +648,11 @@
 		C56767E50E6302CF5C94F922 /* RecipeData */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RecipeData;
+		};
+		D04A1FDAC8E318D27AB90847 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 31CD7EA4D72764A99346A06C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 		D9556D3476AB399E1AC0D42E /* RecipeUI */ = {
 			isa = XCSwiftPackageProductDependency;
