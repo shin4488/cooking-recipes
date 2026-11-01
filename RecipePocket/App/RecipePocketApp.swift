@@ -26,7 +26,11 @@ struct RecipePocketApp: App {
                     )
                 }
             }
-            .task { openStore() }
+            .task {
+                openStore()
+                // 同意の画面を出せるよう、画面ができてから広告の同意を確かめる
+                AppAds.shared.gatherConsent()
+            }
             .onChange(of: scenePhase) { _, phase in
                 // 裏にある間に共有拡張で保存した記録を、前面に戻ったときに読み込む
                 if phase == .background { wasInBackground = true }
