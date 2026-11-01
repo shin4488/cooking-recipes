@@ -77,8 +77,37 @@ func render(_ section: PolicyText.Section) -> String {
 let mailLink = "<a href=\"mailto:\(escape(owner.contactEmail))\">\(escape(owner.contactEmail))</a>"
 let operatorSection = "<section>\n<h2>運営者</h2>\n\(paragraphs(["運営者：\(owner.name)"]))\n<p>問い合わせ先：\(mailLink)</p>\n</section>"
 
-func page(title: String, body: String) -> String {
-    let heading = title == PolicyText.appName ? PolicyText.appName : "\(title)｜\(PolicyText.appName)"
+/// 公開するページ。`name` に .html を付けたファイルに書き出し、Firebase Hosting は拡張子なしの /name で公開する
+struct Page {
+    let name: String
+    let title: String
+    let body: String
+
+    var path: String { name == "index" ? "/" : "/\(name)" }
+}
+
+let home = Page(name: "index", title: PolicyText.appName, body: paragraphs([PolicyText.summary]))
+let terms = Page(name: "terms", title: PolicyText.termsTitle, body: PolicyText.terms(operator: owner).map(render).joined(separator: "\n"))
+let privacy = Page(
+    name: "privacy",
+    title: PolicyText.privacyTitle,
+    body: (PolicyText.privacy.map(render) + [operatorSection]).joined(separator: "\n")
+)
+let support = Page(
+    name: "support",
+    title: "問い合わせ",
+    body: """
+    <p>\(escape(PolicyText.appName))についての相談や不具合の連絡、不適切な広告の報告は、次のアドレスへメールでお送りください。アプリの「\(escape(PolicyText.settingsTitle))」の「\(escape(PolicyText.contactMail.title))」「\(escape(PolicyText.adReportMail.title))」からも送れます。</p>
+    <p>\(mailLink)</p>
+    <p>問い合わせで受け取った情報の扱いは、<a href="\(privacy.path)">\(escape(privacy.title))</a>に記載しています。</p>
+    """
+)
+/// ナビゲーションには、トップ以外のページをこの順に並べる
+let pages = [home, terms, privacy, support]
+
+func html(for page: Page) -> String {
+    let heading = page.title == PolicyText.appName ? PolicyText.appName : "\(page.title)｜\(PolicyText.appName)"
+    let navigation = pages.filter { $0.name != home.name }.map { "<a href=\"\($0.path)\">\(escape($0.title))</a>" }.joined()
     return """
     <!doctype html>
     <html lang="ja">
@@ -104,12 +133,12 @@ func page(title: String, body: String) -> String {
     </head>
     <body>
     <header>
-    <a class="home" href="/">\(escape(PolicyText.appName))</a>
-    <nav><a href="/terms">\(escape(PolicyText.termsTitle))</a><a href="/privacy">\(escape(PolicyText.privacyTitle))</a><a href="/support">問い合わせ</a></nav>
+    <a class="home" href="\(home.path)">\(escape(PolicyText.appName))</a>
+    <nav>\(navigation)</nav>
     </header>
     <main>
-    <h1>\(escape(title))</h1>
-    \(body)
+    <h1>\(escape(page.title))</h1>
+    \(page.body)
     </main>
     <footer>\(escape(PolicyText.appName))</footer>
     </body>
@@ -118,28 +147,11 @@ func page(title: String, body: String) -> String {
     """
 }
 
-let pages: [String: String] = [
-    "index.html": page(title: PolicyText.appName, body: paragraphs([PolicyText.summary])),
-    "terms.html": page(title: PolicyText.termsTitle, body: PolicyText.terms(operator: owner).map(render).joined(separator: "\n")),
-    "privacy.html": page(
-        title: PolicyText.privacyTitle,
-        body: (PolicyText.privacy.map(render) + [operatorSection]).joined(separator: "\n")
-    ),
-    "support.html": page(
-        title: "問い合わせ",
-        body: """
-        <p>\(escape(PolicyText.appName))についての相談や不具合の連絡、不適切な広告の報告は、次のアドレスへメールでお送りください。アプリの「\(escape(PolicyText.settingsTitle))」の「\(escape(PolicyText.contactMail.title))」「\(escape(PolicyText.adReportMail.title))」からも送れます。</p>
-        <p>\(mailLink)</p>
-        <p>問い合わせで受け取った情報の扱いは、<a href="/privacy">\(escape(PolicyText.privacyTitle))</a>に記載しています。</p>
-        """
-    ),
-]
-
 let appAdsURL = outputURL.appending(path: "app-ads.txt")
 do {
     try FileManager.default.createDirectory(at: outputURL, withIntermediateDirectories: true)
-    for (name, html) in pages {
-        try Data(html.utf8).write(to: outputURL.appending(path: name))
+    for page in pages {
+        try Data(html(for: page).utf8).write(to: outputURL.appending(path: "\(page.name).html"))
     }
     if let appAds {
         try Data(appAds.utf8).write(to: appAdsURL)
