@@ -2,13 +2,13 @@ import Foundation
 import RecipeCore
 import SwiftData
 
-/// タイトルの取得を始めようとした結果
+/// `TitleFetchRepository.recipesAwaitingFetch()` で得た記録の取得を始めようとした結果
 public enum TitleFetchStart: Equatable, Sendable {
     /// 「取得中」にして試行日時を記録した。通信して、結果を `TitleFetchRepository.finish` で反映する
     case fetch(Recipe, SupportedSite)
-    /// 拒否したサイトへの取得を止めている間か、同じURLを24時間以内に試したため、通信せずに「取得失敗」にした
+    /// 拒否したサイトへの取得を止めている間か、同じURLを24時間以内に試したため、通信しない。取得を待つ記録と取得中の記録は「取得失敗」にする
     case skipped
-    /// 取得の対象でない
+    /// 通信しない。取得の対象でないか、「取得中」にできなかった（記録が見つからない・書き込めないなど）
     case notNeeded
 }
 
