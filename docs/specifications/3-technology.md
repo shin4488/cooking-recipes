@@ -33,7 +33,7 @@
 
 | 項目 | 運営者の費用 | 前提・根拠 |
 | --- | --- | --- |
-| Apple Developer Program | 1アカウントにつき年12,800円 | App Storeでの配信・更新に必要。同じアカウントの複数アプリで共通のため、加入済みならこのアプリのための追加登録料は不要。[日本のアプリ内購入価格](https://apps.apple.com/jp/app/apple-developer/id640199958)と[年間登録の案内](https://developer.apple.com/jp/help/account/membership/program-enrollment)に基づく。購入画面の金額を優先 |
+| Apple Developer Program | 1アカウントにつき年12,980円 | App Storeでの配信・更新に必要。同じアカウントの複数アプリで共通のため、加入済みならこのアプリのための追加登録料は不要。[年間登録の案内](https://developer.apple.com/jp/help/account/membership/program-enrollment) |
 | データ保存・タイトル取得 | 0円 | 端末内保存と端末からの直接取得。有料API・運営者のデータサーバーは使わない |
 | 広告配信・同意管理 | 0円 | AdMob＋UMPを利用。[AdMobは利用無料](https://support.google.com/admob/answer/7356092?hl=ja) |
 | 利用状況の解析 | 0円 | Google Analytics for Firebaseの標準機能を利用。[公式料金表](https://firebase.google.com/pricing?hl=ja) |
