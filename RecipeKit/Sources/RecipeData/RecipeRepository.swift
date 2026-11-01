@@ -12,7 +12,7 @@ public enum RecipeRepositoryError: Error, Equatable {
     case notFound
 }
 
-/// 端末内の記録の読み書き。本体と共有拡張が同時に保存するため、操作ごとに新しいコンテキストで最新の内容を読み、1回の保存で反映する
+/// 一覧とごみ箱の記録の読み書き。本体と共有拡張の両方が使う。タイトルの自動取得に使う記録は TitleFetchRepository が扱う
 @MainActor
 public final class RecipeRepository {
     private let container: ModelContainer
@@ -156,95 +156,6 @@ public final class RecipeRepository {
         for item in records { context.delete(item) }
         try context.save()
         return records.count
-    }
-
-    // MARK: - タイトルの自動取得
-
-    /// 本体がタイトルを自動取得する記録。一覧の並び順で返す
-    public func recipesAwaitingTitleFetch() throws -> [Recipe] {
-        let notFetched = TitleFetchState.notFetched.rawValue
-        let descriptor = FetchDescriptor<RecipeRecord>(predicate: #Predicate { $0.titleFetchStateValue == notFetched }, sortBy: RecipeRecord.listOrder)
-        return try container.makeContext().fetch(descriptor).map(\.recipe).filter(\.needsTitleFetch)
-    }
-
-    /// 取得の対象なら「取得中」にして返す
-    public func beginTitleFetch(id: UUID, now: Date = .now) throws -> Recipe? {
-        let context = container.makeContext()
-        guard let record = try context.recipeRecord(id), record.recipe.needsTitleFetch else { return nil }
-        record.titleFetchStateValue = TitleFetchState.fetching.rawValue
-        try context.save()
-        return record.recipe
-    }
-
-    /// 取得の結果を反映する。取得中にURLや本人のタイトルが変わっていれば反映しない
-    @discardableResult
-    public func finishTitleFetch(id: UUID, url: String, outcome: TitleFetchOutcome, now: Date = .now) throws -> Recipe? {
-        let context = container.makeContext()
-        guard let record = try context.recipeRecord(id),
-              let recipe = RecipeEditing.applying(outcome, to: record.recipe, fetchedURL: url, now: now)
-        else { return nil }
-        record.apply(recipe)
-        try context.save()
-        return recipe
-    }
-
-    /// 通信制御のため取得しない記録を「取得失敗」にする
-    public func skipTitleFetch(id: UUID) throws {
-        let context = container.makeContext()
-        guard let record = try context.recipeRecord(id), record.recipe.needsTitleFetch || record.titleFetchStateValue == TitleFetchState.fetching.rawValue else { return }
-        record.titleFetchStateValue = TitleFetchState.failed.rawValue
-        try context.save()
-    }
-
-    /// 取得中のまま終了した記録を、取得を待つ状態に戻す
-    public func resetInterruptedTitleFetches() throws {
-        let context = container.makeContext()
-        let fetching = TitleFetchState.fetching.rawValue
-        let records = try context.fetch(FetchDescriptor<RecipeRecord>(predicate: #Predicate { $0.titleFetchStateValue == fetching }))
-        guard !records.isEmpty else { return }
-        records.forEach { $0.titleFetchStateValue = TitleFetchState.notFetched.rawValue }
-        try context.save()
-    }
-
-    public func lastTitleFetchAttempt(url: String) throws -> Date? {
-        try container.makeContext().fetch(FetchDescriptor<TitleFetchAttempt>(predicate: #Predicate { $0.url == url })).first?.attemptedAt
-    }
-
-    public func recordTitleFetchAttempt(url: String, at date: Date) throws {
-        let context = container.makeContext()
-        if let attempt = try context.fetch(FetchDescriptor<TitleFetchAttempt>(predicate: #Predicate { $0.url == url })).first {
-            attempt.attemptedAt = date
-        } else {
-            context.insert(TitleFetchAttempt(url: url, attemptedAt: date))
-        }
-        try context.save()
-    }
-
-    public func titleFetchPause(siteID: String) throws -> Date? {
-        try container.makeContext().fetch(FetchDescriptor<TitleFetchPause>(predicate: #Predicate { $0.siteID == siteID })).first?.until
-    }
-
-    public func pauseTitleFetch(siteID: String, until: Date) throws {
-        let context = container.makeContext()
-        if let pause = try context.fetch(FetchDescriptor<TitleFetchPause>(predicate: #Predicate { $0.siteID == siteID })).first {
-            pause.until = max(pause.until, until)
-        } else {
-            context.insert(TitleFetchPause(siteID: siteID, until: until))
-        }
-        try context.save()
-    }
-
-    /// 24時間を過ぎた試行日時と、期限を過ぎた停止を消す
-    public func purgeTitleFetchHistory(now: Date = .now) throws {
-        let context = container.makeContext()
-        let attempts = try context.fetch(FetchDescriptor<TitleFetchAttempt>()).filter {
-            TitleFetchThrottle.canAttempt(lastAttempt: $0.attemptedAt, now: now)
-        }
-        let pauses = try context.fetch(FetchDescriptor<TitleFetchPause>()).filter { $0.until <= now }
-        guard !attempts.isEmpty || !pauses.isEmpty else { return }
-        for item in attempts { context.delete(item) }
-        for item in pauses { context.delete(item) }
-        try context.save()
     }
 
     #if DEBUG

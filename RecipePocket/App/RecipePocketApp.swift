@@ -45,11 +45,12 @@ struct RecipePocketApp: App {
     private func openStore() {
         guard store == nil else { return }
         do {
-            let repository = RecipeRepository(container: try RecipeContainer.shared())
+            let container = try RecipeContainer.shared()
+            let repository = RecipeRepository(container: container)
             #if DEBUG
             DebugSeed.insertIfRequested(into: repository)
             #endif
-            let store = RecipeStore(repository: repository, analytics: .shared)
+            let store = RecipeStore(repository: repository, titleFetchRepository: TitleFetchRepository(container: container), analytics: .shared)
             self.store = store
             store.refresh()
         } catch {

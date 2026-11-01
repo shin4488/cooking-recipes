@@ -44,17 +44,19 @@ final class RecipeStore {
     var focusedRecipeID: UUID?
 
     @ObservationIgnored private let repository: RecipeRepository
+    @ObservationIgnored private let titleFetchRepository: TitleFetchRepository
     @ObservationIgnored private let analytics: AppAnalytics
-    @ObservationIgnored private lazy var titleFetch = TitleFetchCoordinator(repository: repository) { [weak self] in
+    @ObservationIgnored private lazy var titleFetch = TitleFetchCoordinator(repository: titleFetchRepository) { [weak self] in
         self?.reload()
     }
     /// 検索用に表記ゆれをそろえた値。更新日時が変わった記録だけ作り直す
     @ObservationIgnored private var searchTargets: [UUID: (updatedAt: Date, target: SearchTarget)] = [:]
 
-    init(repository: RecipeRepository, analytics: AppAnalytics) {
+    init(repository: RecipeRepository, titleFetchRepository: TitleFetchRepository, analytics: AppAnalytics) {
         self.repository = repository
+        self.titleFetchRepository = titleFetchRepository
         self.analytics = analytics
-        try? repository.resetInterruptedTitleFetches()
+        try? titleFetchRepository.resetInterrupted()
     }
 
     // MARK: - 読み込み
