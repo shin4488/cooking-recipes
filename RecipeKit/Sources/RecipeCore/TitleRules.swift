@@ -27,10 +27,4 @@ public enum TitleRules {
         guard !title.isEmpty, title.count <= RecipeLimits.titleLength else { return nil }
         return title
     }
-
-    /// 未設定でもホスト名は加えない。どのサイトかはタイトルとは別に表示する
-    public static func displayTitle(_ title: String?) -> String {
-        if let title, !title.isEmpty { return title }
-        return "タイトル未設定"
-    }
 }

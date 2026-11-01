@@ -1,5 +1,6 @@
 import RecipeCore
 import RecipeData
+import RecipeUI
 import SwiftUI
 
 /// 削除した記録を30日間保持し、戻すか完全に削除する
