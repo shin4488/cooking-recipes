@@ -16,11 +16,83 @@ struct RecipeRepositoryTests {
         repository = RecipeRepository(container: container)
     }
 
+    /// 登録時の重複の確認を通さずに記録を入れる。共有拡張が同時に保存した場合などを作る
+    private func insert(_ recipe: Recipe) throws {
+        let context = ModelContext(container)
+        context.insert(RecipeRecord(recipe))
+        try context.save()
+    }
+
+    private func makeRecipe(url: String, sortKey: Double = 0, createdAt: Date) -> Recipe {
+        Recipe(id: UUID(), url: url, title: nil, titleSource: .none, titleFetchState: .unsupported, tags: [], sortKey: sortKey, createdAt: createdAt, updatedAt: createdAt)
+    }
+
     @Test("新しく登録した記録は一覧の先頭に入る")
     func addPutsNewestFirst() throws {
         try repository.add(url: "https://example.com/1", title: .manual("1件目"), tags: [], now: now)
         try repository.add(url: "https://example.com/2", title: .manual("2件目"), tags: [], now: now.addingTimeInterval(1))
         #expect(try repository.recipes().map(\.title) == ["2件目", "1件目"])
+    }
+
+    @Test("並び順の値が同じ記録は、新しく登録した順に並べる")
+    func sameSortKeyNewestFirst() throws {
+        let older = makeRecipe(url: "https://example.com/older", createdAt: now)
+        let newer = makeRecipe(url: "https://example.com/newer", createdAt: now.addingTimeInterval(1))
+        try insert(older)
+        try insert(newer)
+        #expect(try repository.recipes().map(\.id) == [newer.id, older.id])
+    }
+
+    @Test("一覧・ごみ箱・復元の間で、記録の項目をすべて保つ")
+    func keepsAllFields() throws {
+        let added = try repository.add(url: "https://example.com/a", title: .shared("肉じゃが"), tags: ["主菜", "牛肉"], now: now)
+        let listed = try #require(try repository.recipes().first)
+        #expect(listed.url == "https://example.com/a")
+        #expect(listed.title == "肉じゃが")
+        #expect(listed.titleSource == .shared)
+        #expect(listed.titleFetchState == .unsupported)
+        #expect(listed.tags == ["主菜", "牛肉"])
+        #expect(listed.createdAt == now)
+        #expect(listed.updatedAt == now)
+        #expect(listed == added)
+
+        try repository.moveToTrash(id: added.id, now: now.addingTimeInterval(5))
+        let trashed = try #require(try repository.trashedRecipes().first)
+        #expect(trashed.recipe == added)
+        #expect(trashed.deletedAt == now.addingTimeInterval(5))
+
+        #expect(try repository.restore(id: added.id) == added)
+        #expect(try repository.recipes() == [added])
+    }
+
+    @Test("編集で変えた項目を保存し、IDと登録日時と並び順は変えない")
+    func updateKeepsIdentity() throws {
+        let original = try repository.add(url: "https://example.com/a", title: .manual("A"), tags: ["主菜"], now: now)
+        let edited = now.addingTimeInterval(60)
+        try repository.update(id: original.id, url: "https://example.com/b", title: .manual("B"), tags: ["副菜", "時短"], now: edited)
+        let saved = try #require(try repository.recipes().first)
+        #expect(saved.id == original.id)
+        #expect(saved.url == "https://example.com/b")
+        #expect(saved.title == "B")
+        #expect(saved.titleSource == .manual)
+        #expect(saved.tags == ["副菜", "時短"])
+        #expect(saved.sortKey == original.sortKey)
+        #expect(saved.createdAt == now)
+        #expect(saved.updatedAt == edited)
+    }
+
+    @Test("保存された値が読めない種類なら、タイトルの入力方法は未設定、取得の状態は未取得として読む")
+    func unknownStoredValues() throws {
+        let context = ModelContext(container)
+        context.insert(RecipeRecord(id: UUID(), url: "https://example.com/a", title: nil, titleSourceValue: "future", titleFetchStateValue: "future", tags: [], sortKey: 0, createdAt: now, updatedAt: now))
+        context.insert(TrashedRecipeRecord(id: UUID(), url: "https://example.com/b", title: nil, titleSourceValue: "future", titleFetchStateValue: "future", tags: [], sortKey: 0, createdAt: now, updatedAt: now, deletedAt: now))
+        try context.save()
+        let listed = try #require(try repository.recipes().first)
+        #expect(listed.titleSource == .none)
+        #expect(listed.titleFetchState == .notFetched)
+        let trashed = try #require(try repository.trashedRecipes().first)
+        #expect(trashed.recipe.titleSource == .none)
+        #expect(trashed.recipe.titleFetchState == .notFetched)
     }
 
     @Test("同じURLの記録があれば保存せず、既存の記録を返す")
@@ -48,6 +120,22 @@ struct RecipeRepositoryTests {
         }
     }
 
+    @Test("同じURLが一覧とごみ箱の両方にあれば一覧の記録を、ごみ箱に複数あれば最後に削除した記録を案内する")
+    func duplicatePreference() throws {
+        let url = "https://example.com/a"
+        let first = try repository.add(url: url, title: .manual("1回目"), tags: [], now: now)
+        try repository.moveToTrash(id: first.id, now: now.addingTimeInterval(1))
+        // 登録時はごみ箱との重複も止めるため、共有拡張が同時に保存した場合を直接作る
+        let second = makeRecipe(url: url, createdAt: now)
+        try insert(second)
+        try repository.moveToTrash(id: second.id, now: now.addingTimeInterval(2))
+        #expect(try repository.duplicate(of: url) == .trashed(TrashedRecipe(recipe: second, deletedAt: now.addingTimeInterval(2))))
+
+        let third = makeRecipe(url: url, createdAt: now)
+        try insert(third)
+        #expect(try repository.duplicate(of: url) == .active(third))
+    }
+
     @Test("URLを編集して別の記録と同じになる場合は保存しない。自分自身との一致は重複にしない")
     func duplicateOnEdit() throws {
         let first = try repository.add(url: "https://example.com/a", title: .none, tags: [], now: now)
@@ -72,6 +160,17 @@ struct RecipeRepositoryTests {
         try repository.restore(id: b.id)
         #expect(try repository.recipes().map(\.id) == [c.id, b.id, a.id])
         #expect(try repository.trashedRecipes().isEmpty)
+    }
+
+    @Test("ごみ箱は削除が新しい順に並べる")
+    func trashOrder() throws {
+        let recipes = try (1...3).map { index in
+            try repository.add(url: "https://example.com/\(index)", title: .none, tags: [], now: now)
+        }
+        try repository.moveToTrash(id: recipes[1].id, now: now.addingTimeInterval(1))
+        try repository.moveToTrash(id: recipes[0].id, now: now.addingTimeInterval(3))
+        try repository.moveToTrash(id: recipes[2].id, now: now.addingTimeInterval(2))
+        #expect(try repository.trashedRecipes().map(\.id) == [recipes[0].id, recipes[2].id, recipes[1].id])
     }
 
     @Test("一覧に同じURLの記録があれば、ごみ箱から戻さない")
@@ -134,6 +233,91 @@ struct RecipeRepositoryTests {
         let trashed = try repository.add(url: "https://example.com/b", title: .none, tags: ["ごみ箱だけ"], now: now)
         try repository.moveToTrash(id: trashed.id, now: now)
         #expect(Set(try repository.savedTags()) == ["主菜", "鶏肉"])
+    }
+
+    @Test("保存済みのタグは、同じ文字列を1つにし、表記ゆれはまとめない")
+    func savedTagsKeepNotations() throws {
+        try repository.add(url: "https://example.com/a", title: .none, tags: ["主菜", "ＣＵＲＲＹ"], now: now)
+        try repository.add(url: "https://example.com/b", title: .none, tags: ["主菜", "curry"], now: now)
+        let tags = try repository.savedTags()
+        #expect(tags.count == 3)
+        #expect(Set(tags) == ["主菜", "ＣＵＲＲＹ", "curry"])
+    }
+
+    @Test("取得を始められるのは、手入力・共有のタイトルがなく、取得を待つ記録だけ")
+    func beginOnlyAwaiting() throws {
+        let waiting = try repository.add(url: "https://www.sirogohan.com/recipe/nikujyaga/", title: .none, tags: [], now: now)
+        let manual = try repository.add(url: "https://www.sirogohan.com/recipe/karaage/", title: .manual("唐揚げ"), tags: [], now: now)
+        let unsupported = try repository.add(url: "https://example.com/a", title: .none, tags: [], now: now)
+        #expect(try repository.beginTitleFetch(id: manual.id) == nil)
+        #expect(try repository.beginTitleFetch(id: unsupported.id) == nil)
+        #expect(try repository.beginTitleFetch(id: waiting.id)?.titleFetchState == .fetching)
+        let states = try Dictionary(uniqueKeysWithValues: repository.recipes().map { ($0.id, $0.titleFetchState) })
+        #expect(states == [waiting.id: .fetching, manual.id: .notFetched, unsupported.id: .unsupported])
+    }
+
+    @Test("通信制御で取得しない記録は、取得を待つ状態か取得中のときだけ取得失敗にする")
+    func skipOnlyAwaitingOrFetching() throws {
+        let waiting = try repository.add(url: "https://www.sirogohan.com/recipe/nikujyaga/", title: .none, tags: [], now: now)
+        let fetching = try repository.add(url: "https://www.sirogohan.com/recipe/karaage/", title: .none, tags: [], now: now)
+        _ = try repository.beginTitleFetch(id: fetching.id)
+        let manual = try repository.add(url: "https://www.sirogohan.com/recipe/tonjiru/", title: .manual("豚汁"), tags: [], now: now)
+        let unsupported = try repository.add(url: "https://example.com/a", title: .none, tags: [], now: now)
+        for recipe in [waiting, fetching, manual, unsupported] {
+            try repository.skipTitleFetch(id: recipe.id)
+        }
+        let states = try Dictionary(uniqueKeysWithValues: repository.recipes().map { ($0.id, $0.titleFetchState) })
+        #expect(states == [waiting.id: .failed, fetching.id: .failed, manual.id: .notFetched, unsupported.id: .unsupported])
+    }
+
+    @Test("取得中にURLが変わった記録には、旧URLの取得結果を反映しない")
+    func finishIgnoresChangedURL() throws {
+        let oldURL = "https://www.sirogohan.com/recipe/nikujyaga/"
+        let newURL = "https://www.sirogohan.com/recipe/karaage/"
+        let recipe = try repository.add(url: oldURL, title: .none, tags: [], now: now)
+        _ = try repository.beginTitleFetch(id: recipe.id)
+        try repository.update(id: recipe.id, url: newURL, title: .unchanged, tags: [], now: now)
+        #expect(try repository.finishTitleFetch(id: recipe.id, url: oldURL, outcome: .fetched("肉じゃが"), now: now) == nil)
+        let saved = try #require(try repository.recipes().first)
+        #expect(saved.title == nil)
+        #expect(saved.titleFetchState == .notFetched)
+    }
+
+    @Test("拒否したサイトの停止は、あとから短い期限を記録しても長いほうを保つ")
+    func pauseKeepsLaterEnd() throws {
+        try repository.pauseTitleFetch(siteID: "sirogohan", until: now.addingTimeInterval(100))
+        try repository.pauseTitleFetch(siteID: "sirogohan", until: now.addingTimeInterval(50))
+        #expect(try repository.titleFetchPause(siteID: "sirogohan") == now.addingTimeInterval(100))
+        try repository.pauseTitleFetch(siteID: "sirogohan", until: now.addingTimeInterval(200))
+        #expect(try repository.titleFetchPause(siteID: "sirogohan") == now.addingTimeInterval(200))
+        #expect(try repository.titleFetchPause(siteID: "kewpie") == nil)
+    }
+
+    @Test("同じURLの試行日時は、最後に試した日時で上書きする")
+    func attemptOverwrites() throws {
+        let url = "https://www.sirogohan.com/recipe/nikujyaga/"
+        try repository.recordTitleFetchAttempt(url: url, at: now)
+        try repository.recordTitleFetchAttempt(url: url, at: now.addingTimeInterval(10))
+        #expect(try repository.lastTitleFetchAttempt(url: url) == now.addingTimeInterval(10))
+        #expect(try repository.lastTitleFetchAttempt(url: "https://www.sirogohan.com/recipe/karaage/") == nil)
+    }
+
+    @Test("試行日時は24時間たったときに、停止は期限の日時になったときに消す")
+    func purgeBoundaries() throws {
+        let url = "https://www.sirogohan.com/recipe/nikujyaga/"
+        let day: TimeInterval = 24 * 60 * 60
+        try repository.recordTitleFetchAttempt(url: url, at: now)
+        try repository.pauseTitleFetch(siteID: "sirogohan", until: now.addingTimeInterval(day - 1))
+        try repository.purgeTitleFetchHistory(now: now.addingTimeInterval(day - 2))
+        #expect(try repository.lastTitleFetchAttempt(url: url) == now)
+        #expect(try repository.titleFetchPause(siteID: "sirogohan") == now.addingTimeInterval(day - 1))
+
+        try repository.purgeTitleFetchHistory(now: now.addingTimeInterval(day - 1))
+        #expect(try repository.lastTitleFetchAttempt(url: url) == now)
+        #expect(try repository.titleFetchPause(siteID: "sirogohan") == nil)
+
+        try repository.purgeTitleFetchHistory(now: now.addingTimeInterval(day))
+        #expect(try repository.lastTitleFetchAttempt(url: url) == nil)
     }
 
     @Test("自動取得は取得中にしてから結果を反映し、取得中に本人がタイトルを変えたら反映しない")
