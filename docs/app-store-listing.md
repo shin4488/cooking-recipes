@@ -13,8 +13,8 @@ App Store Connect に入れる文面と、質問への回答の下書き。運�
 | カテゴリ | フード/ドリンク |
 | 価格 | 無料 |
 | 配信する国・地域 | 日本 |
-| プライバシーポリシーのURL | `https://<Firebase のプロジェクトID>.web.app/privacy` |
-| サポートURL | `https://<Firebase のプロジェクトID>.web.app/support` |
+| プライバシーポリシーのURL | `https://cooking-recipes-ab42e.web.app/privacy` |
+| サポートURL | `https://cooking-recipes-ab42e.web.app/support` |
 | 著作権 | 入力するときに、年と運営者名を入れる |
 | App Review の連絡先 | 入力するときに、氏名・電話番号・メールアドレスを入れる（公開されない） |
 
