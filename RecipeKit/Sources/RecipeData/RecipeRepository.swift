@@ -37,14 +37,7 @@ public final class RecipeRepository {
     public func savedTags() throws -> [String] {
         var descriptor = FetchDescriptor<RecipeRecord>()
         descriptor.propertiesToFetch = [\.tags]
-        var seen = Set<String>()
-        var result: [String] = []
-        for record in try container.makeContext().fetch(descriptor) {
-            for tag in record.tags where seen.insert(tag).inserted {
-                result.append(tag)
-            }
-        }
-        return result
+        return TagRules.savedTags(in: try container.makeContext().fetch(descriptor).map(\.tags))
     }
 
     /// 同じURL（前後の空白・スキームとホストの大小文字・既定ポートの違いを除く）の記録

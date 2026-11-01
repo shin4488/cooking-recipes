@@ -49,8 +49,7 @@ final class RecipeStore {
     @ObservationIgnored private lazy var titleFetch = TitleFetchCoordinator(repository: titleFetchRepository) { [weak self] in
         self?.reload()
     }
-    /// 検索用に表記ゆれをそろえた値。更新日時が変わった記録だけ作り直す
-    @ObservationIgnored private var searchTargets: [UUID: (updatedAt: Date, target: SearchTarget)] = [:]
+    @ObservationIgnored private var searchIndex = RecipeSearchIndex()
 
     init(repository: RecipeRepository, titleFetchRepository: TitleFetchRepository, analytics: AppAnalytics) {
         self.repository = repository
@@ -76,8 +75,7 @@ final class RecipeStore {
         } catch {
             loadFailed = true
         }
-        var seen = Set<String>()
-        savedTags = recipes.flatMap(\.tags).filter { seen.insert($0).inserted }
+        savedTags = TagRules.savedTags(in: recipes.map(\.tags))
         updateResults()
     }
 
@@ -247,22 +245,7 @@ final class RecipeStore {
     }
 
     private func updateResults() {
-        let conditions = search.conditions
-        guard !conditions.isEmpty else {
-            results = recipes
-            return
-        }
-        let keywords = conditions.map(SearchKeyword.init)
-        results = recipes.filter { target(for: $0).matches(keywords) }
-    }
-
-    private func target(for recipe: Recipe) -> SearchTarget {
-        if let cached = searchTargets[recipe.id], cached.updatedAt == recipe.updatedAt {
-            return cached.target
-        }
-        let target = SearchTarget(title: recipe.title, tags: recipe.tags, host: recipe.host)
-        searchTargets[recipe.id] = (recipe.updatedAt, target)
-        return target
+        results = searchIndex.results(in: recipes, matching: search.conditions)
     }
 
     // MARK: - 案内

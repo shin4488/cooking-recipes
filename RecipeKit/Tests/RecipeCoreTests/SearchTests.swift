@@ -1,5 +1,38 @@
+import Foundation
 import Testing
 import RecipeCore
+
+@Suite("一覧の絞り込み")
+struct RecipeSearchIndexTests {
+    private let created = Date(timeIntervalSince1970: 1_000)
+
+    private func recipe(_ title: String?, tags: [String] = [], url: String = "https://www.example.com/a") -> Recipe {
+        Recipe(url: url, title: title, titleSource: .manual, titleFetchState: .unsupported, tags: tags, sortKey: 0, createdAt: created, updatedAt: created)
+    }
+
+    @Test("すべての条件を満たす記録を、一覧の順のまま返す。条件なしは全件")
+    func filtersInOrder() {
+        let curry = recipe("カレーうどん", tags: ["時短"])
+        let nikujaga = recipe("肉じゃが", tags: ["時短"], url: "https://www.sirogohan.com/recipe/nikujyaga/")
+        let soup = recipe("豚汁")
+        var index = RecipeSearchIndex()
+        #expect(index.results(in: [curry, nikujaga, soup], matching: []).map(\.id) == [curry.id, nikujaga.id, soup.id])
+        #expect(index.results(in: [soup, nikujaga, curry], matching: ["時短"]).map(\.id) == [nikujaga.id, curry.id])
+        #expect(index.results(in: [curry, nikujaga, soup], matching: ["時短", "かれー"]).map(\.id) == [curry.id])
+        #expect(index.results(in: [curry, nikujaga, soup], matching: ["sirogohan"]).map(\.id) == [nikujaga.id])
+        #expect(index.results(in: [curry, nikujaga, soup], matching: ["zzz"]).isEmpty)
+    }
+
+    @Test("編集で更新日時が変わった記録は、新しい内容で探す")
+    func searchesEditedRecipe() {
+        var edited = recipe("肉じゃが")
+        var index = RecipeSearchIndex()
+        #expect(index.results(in: [edited], matching: ["カレー"]).isEmpty)
+        edited.title = "カレー"
+        edited.updatedAt = created.addingTimeInterval(1)
+        #expect(index.results(in: [edited], matching: ["カレー"]).map(\.id) == [edited.id])
+    }
+}
 
 @Suite("検索の一致条件")
 struct SearchMatchingTests {
