@@ -13,9 +13,17 @@ public struct RecipeFormOutput: Equatable, Sendable {
 @MainActor
 @Observable
 public final class RecipeFormModel {
-    public enum Mode: Equatable {
+    /// 登録か、どの記録の編集か。本体は、開く画面をシートで出すときにも使う
+    public enum Mode: Equatable, Identifiable {
         case add
         case edit(Recipe)
+
+        public var id: String {
+            switch self {
+            case .add: "add"
+            case .edit(let recipe): recipe.id.uuidString
+            }
+        }
     }
 
     public let mode: Mode
@@ -170,10 +178,6 @@ public final class RecipeFormModel {
 
         guard let validatedURL, titleError == nil, tagError == nil else { return nil }
         return RecipeFormOutput(url: validatedURL, title: titleInput, tags: tags)
-    }
-
-    public func showURLError(_ message: String) {
-        urlError = message
     }
 
     private var trimmedURL: String {

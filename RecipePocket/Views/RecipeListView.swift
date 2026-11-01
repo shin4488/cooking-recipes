@@ -9,7 +9,7 @@ struct RecipeListView: View {
     @Environment(SearchStore.self) private var search
     @Environment(ToastCenter.self) private var toasts
     @Environment(\.openURL) private var openURL
-    @State private var editor: EditorTarget?
+    @State private var editor: RecipeFormModel.Mode?
     @State private var showsSettings = false
     @State private var isReordering = false
     @State private var expandedTagIDs: Set<UUID> = []
@@ -31,8 +31,8 @@ struct RecipeListView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbar }
         }
-        .sheet(item: $editor) { target in
-            RecipeEditorView(target: target, savedTags: store.savedTags)
+        .sheet(item: $editor) { mode in
+            RecipeEditorView(mode: mode, savedTags: store.savedTags)
         }
         .sheet(isPresented: $showsSettings) {
             SettingsView()
@@ -159,18 +159,6 @@ struct RecipeListView: View {
         Task {
             try? await Task.sleep(for: .seconds(2))
             withAnimation { if highlightedID == id { highlightedID = nil } }
-        }
-    }
-}
-
-enum EditorTarget: Identifiable {
-    case add
-    case edit(Recipe)
-
-    var id: String {
-        switch self {
-        case .add: "add"
-        case .edit(let recipe): recipe.id.uuidString
         }
     }
 }

@@ -12,8 +12,8 @@ struct RecipeEditorView: View {
     @State private var alerts = RecipeSaveAlerts()
     @State private var showsDiscardConfirmation = false
 
-    init(target: EditorTarget, savedTags: [String]) {
-        switch target {
+    init(mode: RecipeFormModel.Mode, savedTags: [String]) {
+        switch mode {
         case .add:
             _model = State(initialValue: RecipeFormModel(urlChoices: [], sharedTitle: nil, savedTags: savedTags))
         case .edit(let recipe):

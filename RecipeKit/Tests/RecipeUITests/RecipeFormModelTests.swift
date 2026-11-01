@@ -22,6 +22,14 @@ struct RecipeFormModelTests {
         model.url = url
         #expect(model.canSave)
     }
+
+    @Test("登録と編集の画面を、記録ごとに区別する")
+    func modeID() {
+        let other = Recipe(id: UUID(), url: recipe.url, title: recipe.title, titleSource: recipe.titleSource, titleFetchState: recipe.titleFetchState, tags: [], sortKey: 0, createdAt: .now, updatedAt: .now)
+        #expect(RecipeFormModel.Mode.add.id == "add")
+        #expect(RecipeFormModel.Mode.edit(recipe).id == recipe.id.uuidString)
+        #expect(RecipeFormModel.Mode.edit(recipe).id != RecipeFormModel.Mode.edit(other).id)
+    }
 }
 
 @MainActor
