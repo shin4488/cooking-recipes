@@ -34,10 +34,10 @@ public struct SearchState: Equatable, Codable, Sendable {
         var result = AddResult.added
         if words.count > 1 {
             let remainder = words.removeLast()
+            // 確定する語は、入力中の文字を空にしてから、チップと比べる
             input = ""
             for word in words where !word.isEmpty {
-                let added = appendChip(word)
-                if added == .limitReached {
+                if append(word) == .limitReached {
                     result = .limitReached
                     break
                 }
@@ -53,13 +53,7 @@ public struct SearchState: Equatable, Codable, Sendable {
     public mutating func addChip(_ text: String) -> AddResult {
         let word = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !word.isEmpty else { return .duplicate }
-        let key = TextNormalization.searchKey(word)
-        if conditions.contains(where: { TextNormalization.searchKey($0) == key }) { return .duplicate }
-        guard conditions.count < RecipeLimits.searchConditions,
-              totalLength + word.count <= RecipeLimits.searchTotalLength
-        else { return .limitReached }
-        chips.append(word)
-        return .added
+        return append(word)
     }
 
     public mutating func removeChip(at index: Int) {
@@ -76,16 +70,12 @@ public struct SearchState: Equatable, Codable, Sendable {
         input.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    private var totalLength: Int {
-        conditions.reduce(0) { $0 + $1.count }
-    }
-
-    private mutating func appendChip(_ word: String) -> AddResult {
+    /// 語をチップに加える。入力中の語も含めた条件に検索時の表記ルールで同じものがあれば加えず、条件の数と合計の文字数の上限を守る
+    private mutating func append(_ word: String) -> AddResult {
         let key = TextNormalization.searchKey(word)
-        if chips.contains(where: { TextNormalization.searchKey($0) == key }) { return .duplicate }
-        let length = chips.reduce(0) { $0 + $1.count }
-        guard chips.count < RecipeLimits.searchConditions,
-              length + word.count <= RecipeLimits.searchTotalLength
+        if conditions.contains(where: { TextNormalization.searchKey($0) == key }) { return .duplicate }
+        guard conditions.count < RecipeLimits.searchConditions,
+              Self.length(of: conditions) + word.count <= RecipeLimits.searchTotalLength
         else { return .limitReached }
         chips.append(word)
         return .added
@@ -93,11 +83,14 @@ public struct SearchState: Equatable, Codable, Sendable {
 
     /// 合計の文字数と条件数が上限を超えないように、入力中の文字を切り詰める
     private mutating func truncateInput() -> Bool {
-        let length = chips.reduce(0) { $0 + $1.count }
-        let available = isFull ? 0 : max(0, RecipeLimits.searchTotalLength - length)
+        let available = isFull ? 0 : max(0, RecipeLimits.searchTotalLength - Self.length(of: chips))
         guard input.count > available else { return false }
         input = String(input.prefix(available))
         return true
+    }
+
+    private static func length(of words: [String]) -> Int {
+        words.reduce(0) { $0 + $1.count }
     }
 
     private static func isSeparator(_ character: Character) -> Bool {
