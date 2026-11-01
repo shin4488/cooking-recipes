@@ -58,11 +58,9 @@ struct RecipeListView: View {
                     .listRowBackground(highlightedID == recipe.id ? Color("AccentColor").opacity(0.15) : nil)
                 }
                 .onMove(perform: isReordering ? { store.move(fromOffsets: $0, toOffset: $1) } : nil)
-            } header: {
-                if !store.recipes.isEmpty {
-                    Text(countText)
-                }
             }
+            // 検索欄との境目は背景の色で分かるため、最初の行の上には区切り線を出さない
+            .listSectionSeparator(.hidden, edges: .top)
         }
         .listStyle(.plain)
         .environment(\.editMode, .constant(isReordering ? .active : .inactive))
@@ -101,10 +99,6 @@ struct RecipeListView: View {
             }
             .disabled(isReordering)
         }
-    }
-
-    private var countText: String {
-        store.search.isEmpty ? "\(store.recipes.count.formatted())件" : "\(store.results.count.formatted())件（全\(store.recipes.count.formatted())件）"
     }
 
     @ViewBuilder
