@@ -63,6 +63,8 @@ final class AppAds {
             hasStartedSDK = true
             // 他社のアプリやサイトでの行動に基づく広告を出さないよう、パーソナライズしない広告を求める
             MobileAds.shared.requestConfiguration.publisherPrivacyPersonalizationState = .disabled
+            // App Store の年齢制限（4+）に合う、一般向けの広告だけを求める
+            MobileAds.shared.requestConfiguration.maxAdContentRating = .general
             MobileAds.shared.start()
         }
         canLoadAds = true
