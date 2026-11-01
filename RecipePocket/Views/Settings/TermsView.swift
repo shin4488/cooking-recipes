@@ -3,25 +3,13 @@ import SwiftUI
 struct TermsView: View {
     var body: some View {
         List {
-            ForEach(sections, id: \.title) { section in
-                Section(section.title) {
-                    Text(section.body)
+            ForEach(PolicyText.terms(operator: AppInfo.policyOperator), id: \.title) { section in
+                Section(section.title ?? "") {
+                    ForEach(section.paragraphs, id: \.self) { Text($0) }
                 }
             }
         }
-        .navigationTitle("利用条件")
+        .navigationTitle(PolicyText.termsTitle)
         .analyticsScreen(.terms)
-    }
-
-    private var sections: [(title: String, body: String)] {
-        [
-            ("このアプリについて", "レシピぽけっとは、気になったレシピのURLをタイトル・タグとともに端末内に保存し、あとから探して元のサイトを開くためのアプリです。会員登録は不要で、無料で利用できます。"),
-            ("保存するデータ", "保存したレシピは、この端末の中だけに保存します。アプリには移行・バックアップの機能はありません。アプリの削除、端末の紛失・故障などで失われたデータは、運営者が復旧できません。iOS標準のバックアップ・移行で引き継げるかは、利用者の設定や状況によります。"),
-            ("レシピサイトの利用", "保存したページの閲覧・利用は、各サイトの利用条件に従ってください。本アプリは各サイトの運営会社と提携していません。タイトルの自動取得は、対応サイトの公開レシピについて、利用者が登録したときに限り行います。"),
-            ("禁止事項", "法令や公序良俗に反する利用、他者の権利を侵害する利用、本アプリの運営を妨げる行為を禁止します。"),
-            ("免責", "本アプリは現状のまま提供します。保存したデータの消失、各サイトの内容の変更・削除、本アプリの利用により生じた損害について、運営者に故意または重大な過失がある場合を除き、責任を負いません。"),
-            ("利用条件の変更", "運営者は、必要に応じてこの利用条件を変更することがあります。重要な変更は、アプリ内でお知らせします。"),
-            ("運営者・問い合わせ", "運営者：\(AppInfo.operatorName ?? "未設定")\n問い合わせ先：\(AppInfo.contactEmail ?? "未設定")"),
-        ]
     }
 }
