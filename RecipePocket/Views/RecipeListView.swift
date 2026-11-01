@@ -92,7 +92,7 @@ struct RecipeListView: View {
             Button {
                 showsSettings = true
             } label: {
-                Label("設定", systemImage: "gearshape")
+                Label(PolicyText.settingsTitle, systemImage: "gearshape")
             }
             Button {
                 editor = .add

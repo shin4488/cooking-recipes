@@ -128,7 +128,7 @@ let pages: [String: String] = [
     "support.html": page(
         title: "問い合わせ",
         body: """
-        <p>\(escape(PolicyText.appName))についての相談や不具合の連絡、不適切な広告の報告は、次のアドレスへメールでお送りください。アプリの「設定」の「問い合わせ（メール）」「不適切な広告を報告（メール）」からも送れます。</p>
+        <p>\(escape(PolicyText.appName))についての相談や不具合の連絡、不適切な広告の報告は、次のアドレスへメールでお送りください。アプリの「\(escape(PolicyText.settingsTitle))」の「\(escape(PolicyText.contactMail.title))」「\(escape(PolicyText.adReportMail.title))」からも送れます。</p>
         <p>\(mailLink)</p>
         <p>問い合わせで受け取った情報の扱いは、<a href="/privacy">\(escape(PolicyText.privacyTitle))</a>に記載しています。</p>
         """

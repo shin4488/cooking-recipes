@@ -21,23 +21,23 @@ struct SettingsView: View {
                 Section("広告") {
                     // 同意が必要な地域で、UMP が変更の入口を求めているときだけ出す
                     if AppAds.shared.requiresPrivacyOptions {
-                        Button("広告の同意の設定") { AppAds.shared.presentPrivacyOptions() }
+                        Button(PolicyText.adConsentTitle) { AppAds.shared.presentPrivacyOptions() }
                     }
                     mailRow(
-                        "不適切な広告を報告",
+                        PolicyText.adReportMail,
                         subject: "レシピぽけっと：不適切な広告の報告",
                         guide: "表示された広告の内容（広告主・商品など）と、表示された日時を書いてください。広告の画面のスクリーンショットがあれば添付してください。"
                     )
                 }
                 Section("このアプリについて") {
-                    NavigationLink("プライバシーと外部送信") { PrivacyView() }
-                    NavigationLink("利用条件") { TermsView() }
-                    mailRow("問い合わせ", subject: "レシピぽけっとへのお問い合わせ")
+                    NavigationLink(PolicyText.privacyTitle) { PrivacyView() }
+                    NavigationLink(PolicyText.termsTitle) { TermsView() }
+                    mailRow(PolicyText.contactMail, subject: "レシピぽけっとへのお問い合わせ")
                     NavigationLink("ライセンス") { LicensesView() }
                     LabeledContent("バージョン", value: AppInfo.version)
                 }
             }
-            .navigationTitle("設定")
+            .navigationTitle(PolicyText.settingsTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -61,15 +61,15 @@ struct SettingsView: View {
 
     /// 問い合わせ先へのメールを作る行。問い合わせ先を入れていないビルドでは「未設定」と表示する
     @ViewBuilder
-    private func mailRow(_ title: String, subject: String, guide: String? = nil) -> some View {
+    private func mailRow(_ item: PolicyText.MailItem, subject: String, guide: String? = nil) -> some View {
         if let url = AppInfo.contactMailURL(subject: subject, guide: guide) {
-            Button("\(title)（メール）") {
+            Button(item.title) {
                 openURL(url) { accepted in
                     if !accepted { showsMailUnavailable = true }
                 }
             }
         } else {
-            LabeledContent(title, value: "未設定")
+            LabeledContent(item.name, value: "未設定")
         }
     }
 }

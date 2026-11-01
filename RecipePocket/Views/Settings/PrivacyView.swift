@@ -21,7 +21,7 @@ struct PrivacyView: View {
             }
 
             Section {
-                Toggle("利用状況を送る", isOn: $analyticsEnabled)
+                Toggle(PolicyText.analyticsToggleTitle, isOn: $analyticsEnabled)
                     .onChange(of: analyticsEnabled) { _, enabled in
                         AppAnalytics.shared.isEnabled = enabled
                     }
