@@ -56,19 +56,29 @@ App Store Connect に入れる文面と、質問への回答の下書き。運�
 
 ## App のプライバシー（回答案）
 
-アプリが外部に送るのは、Google Analytics for Firebase の利用状況だけ（[プライバシー説明](../RecipePocket/Support/PolicyText.swift)）。Google の説明では、既定で集めるのはアプリインスタンス ID と操作の記録で、位置情報は IP アドレスから大まかに推定し、広告 ID とは結び付けない（[Google の説明](https://support.google.com/analytics/answer/10285841?hl=ja)）。
+Apple は、アプリが端末の外へ送ったデータを、運営者や、アプリに組み込んだ他社のコード（解析ツール・SDK など）が、要求に応じるのに必要な間より長く読めることを「収集」とする（[App のプライバシーの説明](https://developer.apple.com/app-store/app-privacy-details/)）。このアプリで当たるのは、Google Analytics for Firebase に送る利用状況だけ。タイトルの取得でレシピサイトに送る要求は、レシピサイトがアプリに組み込んだ他社に当たらないため、含めない。
 
 | 質問 | 回答案 |
 | --- | --- |
 | データを収集するか | はい |
-| データの種類 | 使用状況データ（製品の操作）、識別子（デバイス ID）、位置情報（おおよその位置情報） |
-| ユーザーに関連付けるか | いいえ（アプリでユーザー ID を設定していない） |
-| トラッキングに使うか | いいえ（広告識別子を使わない `FirebaseAnalyticsCore` を使い、他社のデータと結び付けない） |
+| データの種類 | 使用状況データ（製品の操作）、識別子（デバイス ID）、位置情報（おおよその位置情報）、診断（その他の診断データ） |
+| ユーザーに関連付けるか | いいえ |
+| トラッキングに使うか | いいえ |
 | 利用目的 | アナリティクス |
 
-- アプリインスタンス ID を「デバイス ID」に当てはめるかなど、Apple の分類への当てはめは Google の説明に書かれていない。提出前に Apple の [App のプライバシーの説明](https://developer.apple.com/app-store/app-privacy-details/)で確かめる。
-- Firebase Installations は、端末・OS・アプリの種類（ユーザーエージェント）を集めるが、利用者や端末の識別子と結び付けない（[Firebase の説明](https://firebase.google.com/docs/ios/app-store-data-collection)）。
-- 問い合わせのメールは、利用者がメールアプリから送る。申告が要るかは、提出前に Apple の説明で確かめる。
+| データの種類 | Apple の定義 | このアプリで当たるもの |
+| --- | --- | --- |
+| 製品の操作 | アプリの起動・タップ・スクロールなど、アプリの操作の情報 | 画面の表示、登録・検索などの操作の種類と回数 |
+| デバイス ID | 端末の広告識別子など、端末単位の ID | Google Analytics がアプリのインストールごとに割り当てるアプリインスタンス ID（[Google の説明](https://support.google.com/analytics/answer/10285841?hl=ja)） |
+| おおよその位置情報 | 緯度・経度の小数第3位より粗い位置 | Google Analytics が IP アドレスから推定する地域。iOS の位置情報サービスは使わない |
+| その他の診断データ | アプリの技術的な診断のために集める、そのほかのデータ | Firebase Installations が集める、端末・OS・アプリの種類（ユーザーエージェント）（[Firebase の説明](https://firebase.google.com/docs/ios/app-store-data-collection)） |
+
+- デバイス ID: Apple・Google とも、アプリインスタンス ID をどの種類に当てはめるかを書いていない。利用者・アカウント単位の「ユーザー ID」ではなく、端末上のアプリを区別する ID のため、デバイス ID として申告する。
+- その他の診断データ: Firebase Installations のプライバシーマニフェストが、関連付けない・トラッキングに使わない・アナリティクス目的として申告している。
+- Google Analytics の SDK（GoogleAppMeasurement）にはプライバシーマニフェストが含まれないため、ほかの3種類は Google の説明から当てはめた。この SDK は、Apple がプライバシーマニフェストを必須とする [SDK の一覧](https://developer.apple.com/support/third-party-SDK-requirements/)に含まれていない。
+- ユーザーに関連付けない: Apple は、直接の識別子を除いて集め、集めた後に本人や他のデータと結び付けなければ、関連付けないものとする。アプリはユーザー ID を設定せず、Google シグナルを無効にする。関係する法律で個人情報に当たるものは関連付けるものとされるが、仕様の[法的な整理](specifications/2-data.md#法的な整理)では、解析の識別子を個人関連情報として扱う。
+- トラッキングに使わない: 広告識別子を使わない `FirebaseAnalyticsCore` を使い、他社のデータと結び付けず、データブローカーにも渡さない。
+- 問い合わせのメールは申告しない。アプリは `mailto:` でメールアプリを開くだけで、メールは利用者がメールアプリから送り、アプリからは何も送らないため、上の「収集」に当たらない。Apple の説明に `mailto:` の扱いは書かれていない。アプリが送る問い合わせフォームでも、任意で、主な機能と関係がなく、ほかの条件を満たすものは、申告しなくてよい例に挙げている。
 
 ## 年齢制限の質問に答えるための事実
 
