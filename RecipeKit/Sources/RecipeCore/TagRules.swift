@@ -34,6 +34,18 @@ public enum TagRules {
         return .success(tags + [notation])
     }
 
+    /// 記録に付いているタグを、同じ文字列を1つにして最初に現れた順に並べる。表記ゆれは候補を作るときにまとめる
+    public static func savedTags(in tagLists: some Sequence<[String]>) -> [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+        for tags in tagLists {
+            for tag in tags where seen.insert(tag).inserted {
+                result.append(tag)
+            }
+        }
+        return result
+    }
+
     /// タグの候補。用意したタグと保存済みのタグを、表記ゆれをまとめて並べる
     public static func candidates(savedTags: [String]) -> [String] {
         var seen = Set<String>()

@@ -144,4 +144,16 @@ struct OrderAndTrashTests {
         #expect(TitleFetchThrottle.pauseEnd(refusedAt: attempt, retryAfter: 60) == attempt.addingTimeInterval(day))
         #expect(TitleFetchThrottle.pauseEnd(refusedAt: attempt, retryAfter: 2 * day) == attempt.addingTimeInterval(2 * day))
     }
+
+    @Test("拒否したサイトへの取得を止めている間と、同じURLを24時間以内に試した場合は取得しない。止める期限の日時になったら再開する")
+    func canFetch() {
+        let now = Date(timeIntervalSince1970: 100_000)
+        let day: TimeInterval = 24 * 60 * 60
+        #expect(TitleFetchThrottle.canFetch(pausedUntil: nil, lastAttempt: nil, now: now))
+        #expect(!TitleFetchThrottle.canFetch(pausedUntil: now.addingTimeInterval(1), lastAttempt: nil, now: now))
+        #expect(TitleFetchThrottle.canFetch(pausedUntil: now, lastAttempt: nil, now: now))
+        #expect(!TitleFetchThrottle.canFetch(pausedUntil: nil, lastAttempt: now.addingTimeInterval(-day + 1), now: now))
+        #expect(TitleFetchThrottle.canFetch(pausedUntil: now.addingTimeInterval(-1), lastAttempt: now.addingTimeInterval(-day), now: now))
+        #expect(!TitleFetchThrottle.canFetch(pausedUntil: now.addingTimeInterval(1), lastAttempt: now.addingTimeInterval(-day), now: now))
+    }
 }

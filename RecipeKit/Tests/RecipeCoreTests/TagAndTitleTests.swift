@@ -43,6 +43,12 @@ struct TagRulesTests {
         #expect(TagRules.adding("タグ21", to: twenty, knownTags: []) == .failure(.tooMany))
     }
 
+    @Test("保存済みのタグは、同じ文字列を1つにして最初に現れた順に並べ、表記ゆれはまとめない")
+    func savedTags() {
+        #expect(TagRules.savedTags(in: [["主菜", "鶏肉"], [], ["鶏肉", "ＣＵＲＲＹ"], ["curry", "主菜"]]) == ["主菜", "鶏肉", "ＣＵＲＲＹ", "curry"])
+        #expect(TagRules.savedTags(in: [[String]]()).isEmpty)
+    }
+
     @Test("候補はアプリが用意するタグと保存済みのタグを、重複をまとめて並べる")
     func candidates() {
         #expect(TagRules.candidates(savedTags: []) == TagRules.presets)

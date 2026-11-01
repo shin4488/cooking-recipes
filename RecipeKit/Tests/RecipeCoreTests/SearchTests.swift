@@ -1,5 +1,38 @@
+import Foundation
 import Testing
 import RecipeCore
+
+@Suite("一覧の絞り込み")
+struct RecipeSearchIndexTests {
+    private let created = Date(timeIntervalSince1970: 1_000)
+
+    private func recipe(_ title: String?, tags: [String] = [], url: String = "https://www.example.com/a") -> Recipe {
+        Recipe(url: url, title: title, titleSource: .manual, titleFetchState: .unsupported, tags: tags, sortKey: 0, createdAt: created, updatedAt: created)
+    }
+
+    @Test("すべての条件を満たす記録を、一覧の順のまま返す。条件なしは全件")
+    func filtersInOrder() {
+        let curry = recipe("カレーうどん", tags: ["時短"])
+        let nikujaga = recipe("肉じゃが", tags: ["時短"], url: "https://www.sirogohan.com/recipe/nikujyaga/")
+        let soup = recipe("豚汁")
+        var index = RecipeSearchIndex()
+        #expect(index.results(in: [curry, nikujaga, soup], matching: []).map(\.id) == [curry.id, nikujaga.id, soup.id])
+        #expect(index.results(in: [soup, nikujaga, curry], matching: ["時短"]).map(\.id) == [nikujaga.id, curry.id])
+        #expect(index.results(in: [curry, nikujaga, soup], matching: ["時短", "かれー"]).map(\.id) == [curry.id])
+        #expect(index.results(in: [curry, nikujaga, soup], matching: ["sirogohan"]).map(\.id) == [nikujaga.id])
+        #expect(index.results(in: [curry, nikujaga, soup], matching: ["zzz"]).isEmpty)
+    }
+
+    @Test("編集で更新日時が変わった記録は、新しい内容で探す")
+    func searchesEditedRecipe() {
+        var edited = recipe("肉じゃが")
+        var index = RecipeSearchIndex()
+        #expect(index.results(in: [edited], matching: ["カレー"]).isEmpty)
+        edited.title = "カレー"
+        edited.updatedAt = created.addingTimeInterval(1)
+        #expect(index.results(in: [edited], matching: ["カレー"]).map(\.id) == [edited.id])
+    }
+}
 
 @Suite("検索の一致条件")
 struct SearchMatchingTests {
@@ -73,6 +106,29 @@ struct SearchStateTests {
         #expect(tagged.addChip("curry") == .duplicate)
     }
 
+    @Test("一度に確定する語のうち、同じ条件は1つにまとめる")
+    func commitSkipsDuplicateWords() {
+        var state = SearchState(input: "カレー かれー 鶏 ")
+        #expect(state.commitCompletedWords() == .added)
+        #expect(state.chips == ["カレー", "鶏"])
+        #expect(state.input.isEmpty)
+    }
+
+    @Test("入力中の語は、チップになるまで同じ条件かを確かめない")
+    func remainderIsNotDeduplicated() {
+        var state = SearchState(chips: ["鶏"], input: "とり 鶏")
+        state.commitCompletedWords()
+        #expect(state.chips == ["鶏", "とり"])
+        #expect(state.input == "鶏")
+    }
+
+    @Test("空白だけのタグは加えない")
+    func addChipIgnoresBlank() {
+        var state = SearchState()
+        #expect(state.addChip("  ") == .duplicate)
+        #expect(state.chips.isEmpty)
+    }
+
     @Test("タグは空白を含んでも1つのチップとして追加する")
     func tagChipKeepsSpaces() {
         var state = SearchState()
@@ -93,6 +149,22 @@ struct SearchStateTests {
         #expect(typing.input.isEmpty)
     }
 
+    @Test("確定の途中で条件が20個に達したら、残りの語と入力中の文字を消す")
+    func commitStopsAtConditionLimit() {
+        var state = SearchState(chips: (1...19).map { "語\($0)" }, input: "a b c")
+        #expect(state.commitCompletedWords() == .limitReached)
+        #expect(state.chips.count == 20)
+        #expect(state.chips.last == "a")
+        #expect(state.input.isEmpty)
+    }
+
+    @Test("条件が20個のときは、入力中の文字を残さない")
+    func fullStateClearsInput() {
+        var state = SearchState(chips: (1...20).map { "語\($0)" }, input: "カレー")
+        #expect(state.commitCompletedWords() == .limitReached)
+        #expect(state.input.isEmpty)
+    }
+
     @Test("入力中の語も条件の数に含める")
     func inputCountsAsCondition() {
         var state = SearchState(input: "入力中")
@@ -110,6 +182,21 @@ struct SearchStateTests {
         var typing = SearchState(chips: [String(repeating: "あ", count: 198)], input: "いいう")
         typing.commitCompletedWords()
         #expect(typing.input == "いい")
+    }
+
+    @Test("確定の途中で合計が200文字を超える語があれば、その語から先と入力中の文字を消す")
+    func commitStopsAtLengthLimit() {
+        var state = SearchState(chips: [String(repeating: "あ", count: 195)], input: "いいいい ううう え お")
+        #expect(state.commitCompletedWords() == .limitReached)
+        #expect(state.chips == [String(repeating: "あ", count: 195), "いいいい"])
+        #expect(state.input.isEmpty)
+    }
+
+    @Test("タグを加えるときは、入力中の文字も合計の文字数に含める")
+    func addChipCountsInputLength() {
+        var state = SearchState(chips: [String(repeating: "あ", count: 190)], input: "いいいいい")
+        #expect(state.addChip("うううう") == .added)
+        #expect(state.addChip("ええ") == .limitReached)
     }
 
     @Test("個別に削除でき、すべてクリアでチップと入力中の文字を消す")
