@@ -13,8 +13,9 @@ let package = Package(
     targets: [
         .target(name: "RecipeCore"),
         .target(name: "RecipeData", dependencies: ["RecipeCore"]),
-        .target(name: "RecipeUI", dependencies: ["RecipeCore"]),
+        .target(name: "RecipeUI", dependencies: ["RecipeCore", "RecipeData"]),
         .testTarget(name: "RecipeCoreTests", dependencies: ["RecipeCore"]),
         .testTarget(name: "RecipeDataTests", dependencies: ["RecipeData"]),
+        .testTarget(name: "RecipeUITests", dependencies: ["RecipeUI"]),
     ]
 )

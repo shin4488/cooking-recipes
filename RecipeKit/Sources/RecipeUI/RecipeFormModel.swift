@@ -83,6 +83,9 @@ public final class RecipeFormModel {
 
     public var isEditing: Bool { mode != .add }
 
+    /// 保存のボタンを押せる。URLが空白だけのときは押せない
+    public var canSave: Bool { !trimmedURL.isEmpty }
+
     public var hasChanges: Bool {
         trimmedURL != initialURL.trimmingCharacters(in: .whitespacesAndNewlines)
             || title != initialTitle

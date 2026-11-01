@@ -61,6 +61,17 @@
                ReferencedContainer = "container:RecipeKit">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "RecipeUITests"
+               BuildableName = "RecipeUITests"
+               BlueprintName = "RecipeUITests"
+               ReferencedContainer = "container:RecipeKit">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

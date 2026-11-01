@@ -15,18 +15,6 @@ struct Toast: Identifiable, Equatable {
     static func == (lhs: Toast, rhs: Toast) -> Bool { lhs.id == rhs.id }
 }
 
-enum SaveResult {
-    case saved(Recipe)
-    case duplicate(RecipeDuplicate)
-    case failed
-}
-
-enum RestoreResult {
-    case restored(Recipe)
-    case duplicate(Recipe)
-    case failed
-}
-
 /// 一覧・検索・ごみ箱の状態と操作
 @MainActor
 @Observable
@@ -81,31 +69,27 @@ final class RecipeStore {
 
     // MARK: - 登録・編集
 
-    func add(_ output: RecipeFormOutput) -> SaveResult {
+    func add(_ output: RecipeFormOutput) -> RecipeSaveResult {
         save(event: .recipeAdded(tagCount: output.tags.count)) {
             try repository.add(url: output.url, title: output.title, tags: output.tags)
         }
     }
 
-    func update(_ recipe: Recipe, with output: RecipeFormOutput) -> SaveResult {
+    func update(_ recipe: Recipe, with output: RecipeFormOutput) -> RecipeSaveResult {
         save(event: .recipeUpdated) {
             try repository.update(id: recipe.id, url: output.url, title: output.title, tags: output.tags)
         }
     }
 
-    private func save(event: AnalyticsEvent, _ operation: () throws -> Recipe) -> SaveResult {
-        do {
-            let recipe = try operation()
+    private func save(event: AnalyticsEvent, _ operation: () throws -> Recipe) -> RecipeSaveResult {
+        let result = RecipeSaveResult(operation)
+        if case .saved = result {
             analytics.log(event)
             reload()
             showToast("保存しました")
             titleFetch.start()
-            return .saved(recipe)
-        } catch RecipeRepositoryError.duplicate(let duplicate) {
-            return .duplicate(duplicate)
-        } catch {
-            return .failed
         }
+        return result
     }
 
     func copyURL(of recipe: Recipe) {
@@ -169,18 +153,14 @@ final class RecipeStore {
         }
     }
 
-    func restore(_ trashed: TrashedRecipe) -> RestoreResult {
-        do {
-            let recipe = try repository.restore(id: trashed.id)
+    func restore(_ trashed: TrashedRecipe) -> RecipeRestoreResult {
+        let result = RecipeRestoreResult { try repository.restore(id: trashed.id) }
+        if case .restored = result {
             analytics.log(.recipeRestored)
             reload()
             showToast("一覧に戻しました")
-            return .restored(recipe)
-        } catch RecipeRepositoryError.duplicate(.active(let existing)) {
-            return .duplicate(existing)
-        } catch {
-            return .failed
         }
+        return result
     }
 
     func deletePermanently(_ trashed: TrashedRecipe) {
