@@ -394,7 +394,6 @@
 				PRODUCT_NAME = ShareExtension;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -416,7 +415,6 @@
 				PRODUCT_NAME = ShareExtension;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -443,7 +441,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.shin4488.cookingrecipes;
 				PRODUCT_NAME = RecipePocket;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -543,7 +540,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.shin4488.cookingrecipes;
 				PRODUCT_NAME = RecipePocket;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
