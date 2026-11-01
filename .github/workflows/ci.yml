@@ -17,6 +17,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: プロジェクトのファイルに Team ID がないことの確認
+        # Team ID は Config/Local.xcconfig だけに置く。公開のログに出さないよう、見つけた行は表示しない
+        run: |
+          if grep -qE 'DEVELOPMENT_TEAM = [A-Z0-9]+;' RecipePocket.xcodeproj/project.pbxproj; then
+            echo "::error::RecipePocket.xcodeproj/project.pbxproj に DEVELOPMENT_TEAM の値があります。チームは Config/Local.xcconfig に入れてください"
+            exit 1
+          fi
       - name: RecipeKit のテスト
         run: swift test --package-path RecipeKit
       - name: アプリと共有拡張のビルド
