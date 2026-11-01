@@ -44,7 +44,7 @@ cp Config/Local.example.xcconfig Config/Local.xcconfig
 | 15 | App Store Connect で審査に提出し、承認されたら公開する | 審査担当からの連絡先を入れた |
 | 16 | 公開した後、AdMob のアプリの設定で、App Store の掲載情報を追加する | AdMob で app-ads.txt が確認済みになり、アプリの審査が済んで、実際の広告が出る |
 
-`Config/RecipePocket-Info.plist` の `SKAdNetworkItems` は、Google の[クイックスタート](https://developers.google.com/admob/ios/quick-start?hl=ja)にある一覧（2026年11月1日に確認した50件）に合わせた。SDK の版を上げるときに、一覧が変わっていないかを確かめる。
+`Config/RecipePocket-Info.plist` の `SKAdNetworkItems` は、Google の[クイックスタート](https://developers.google.com/admob/ios/quick-start?hl=ja)にある一覧（2026年11月1日に確認した50件）に合わせた。
 
 ## Web ページの公開
 
