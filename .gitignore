@@ -17,3 +17,6 @@ web/public/
 web/.firebase/
 web/.firebaserc
 firebase-debug.log
+
+# 手元の作業メモは git で管理しない
+/tmp/
