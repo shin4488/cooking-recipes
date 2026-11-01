@@ -9,3 +9,12 @@ OPERATOR_NAME =
 
 // 問い合わせ先のメールアドレス
 CONTACT_EMAIL =
+
+// AdMob のアプリ ID（ca-app-pub-…~… の形）。空なら、Debug ビルドでは Google のテスト用の ID を使う
+ADMOB_APP_ID =
+
+// 一覧の下に出すバナーの広告ユニット ID（ca-app-pub-…/… の形）。空なら、Debug ビルドでは Google のテスト用の ID を使う
+ADMOB_BANNER_UNIT_ID =
+
+// AdMob のパブリッシャー ID（pub-… の形）。web/build.sh が app-ads.txt に入れる
+ADMOB_PUBLISHER_ID =

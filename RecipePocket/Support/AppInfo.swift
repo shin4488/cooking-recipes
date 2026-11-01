@@ -1,10 +1,13 @@
 import Foundation
 import UIKit
 
-/// 公開前に Config/Local.xcconfig で設定する運営者の情報と、アプリの版
+/// 公開前に Config/Local.xcconfig で設定する運営者の情報・広告の ID と、アプリの版
 enum AppInfo {
     static var operatorName: String? { infoValue("RPOperatorName") }
     static var contactEmail: String? { infoValue("RPContactEmail") }
+    /// AdMob のアプリ ID と、一覧のバナーの広告ユニット ID。Debug ビルドで値を入れていなければ、Google のテスト用の ID になる
+    static var adMobAppID: String? { infoValue("GADApplicationIdentifier") }
+    static var adMobBannerUnitID: String? { infoValue("RPAdMobBannerUnitID") }
 
     /// 利用条件・プライバシー説明に載せる運営者。公開前の値を入れていないビルドでは「未設定」と表示する
     static var policyOperator: PolicyText.Operator {

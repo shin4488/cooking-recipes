@@ -288,7 +288,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# App Store 向けのアーカイブで、git 管理外の値を入れ忘れていないかを確かめる\nif [ \"${ACTION}\" = \"install\" ]; then\n  missing=\"\"\n  [ -n \"${DEVELOPMENT_TEAM}\" ] || missing=\"${missing} DEVELOPMENT_TEAM\"\n  [ -n \"${OPERATOR_NAME}\" ] || missing=\"${missing} OPERATOR_NAME\"\n  [ -n \"${CONTACT_EMAIL}\" ] || missing=\"${missing} CONTACT_EMAIL\"\n  if [ -n \"${missing}\" ]; then\n    echo \"error: Config/Local.xcconfig に${missing} がありません。docs/release-checklist.md の手順で設定してください\"\n    exit 1\n  fi\nfi\n";
+			shellScript = "# App Store 向けのアーカイブで、git 管理外の値を入れ忘れていないか、広告に Google のテスト用の ID を使っていないかを確かめる\nif [ \"${ACTION}\" = \"install\" ]; then\n  missing=\"\"\n  [ -n \"${DEVELOPMENT_TEAM}\" ] || missing=\"${missing} DEVELOPMENT_TEAM\"\n  [ -n \"${OPERATOR_NAME}\" ] || missing=\"${missing} OPERATOR_NAME\"\n  [ -n \"${CONTACT_EMAIL}\" ] || missing=\"${missing} CONTACT_EMAIL\"\n  [ -n \"${ADMOB_APP_ID}\" ] || missing=\"${missing} ADMOB_APP_ID\"\n  [ -n \"${ADMOB_BANNER_UNIT_ID}\" ] || missing=\"${missing} ADMOB_BANNER_UNIT_ID\"\n  if [ -n \"${missing}\" ]; then\n    echo \"error: Config/Local.xcconfig に${missing} がありません。docs/release-checklist.md の手順で設定してください\"\n    exit 1\n  fi\n  case \"${ADMOB_APP_ID} ${ADMOB_BANNER_UNIT_ID}\" in\n    *ca-app-pub-3940256099942544*)\n      echo \"error: Config/Local.xcconfig の AdMob の ID が Google のテスト用の ID です。AdMob で作った ID を入れてください\"\n      exit 1\n      ;;\n  esac\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
