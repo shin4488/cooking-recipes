@@ -34,15 +34,15 @@ struct Palette {
 
 /// 書き出すファイル名と色。明るい表示・ダーク表示・色付き（ホーム画面の色合いに合わせて iOS が色を付ける）の3枚
 let icons: [(file: String, palette: Palette)] = [
-    // くすみピンクの背景に、クリーム色のポケット
-    ("AppIcon.png", Palette(backgroundTop: color(0xF4DCD4), backgroundBottom: color(0xE3B2AA), pocket: color(0xFFFAF5), hem: color(0xF8E6DF),
-                            gingham: color(0xE6B9B0, 0.55), stitch: color(0xD49B92), petal: color(0xE4A39A), flowerCenter: color(0xF2D39A),
-                            leaf: color(0xA9BE9E), card: color(0xFFFFFF), cardLine: color(0xE6BDB5), spoonBowl: color(0xE5C7A8),
-                            spoonHandle: color(0xD3AE8A), shadow: color(0x8A4F45, 0.20))),
-    ("AppIcon-Dark.png", Palette(backgroundTop: color(0x3D302E), backgroundBottom: color(0x1F1817), pocket: color(0xF8EAE3), hem: color(0xEFD6CE),
-                                 gingham: color(0xD6A49A, 0.55), stitch: color(0xD8978D), petal: color(0xE6A097), flowerCenter: color(0xF0D39A),
-                                 leaf: color(0x9DB592), card: color(0xFFF7F2), cardLine: color(0xE1B0A7), spoonBowl: color(0xDDBA95),
-                                 spoonHandle: color(0xC8A07A), shadow: color(0x000000, 0.40))),
+    // くすみピンクの背景に、クリーム色のポケット。中身が背景に埋もれないよう、背景と中身の色に差を付ける
+    ("AppIcon.png", Palette(backgroundTop: color(0xEFCFC6), backgroundBottom: color(0xD9A096), pocket: color(0xFFFAF5), hem: color(0xF6DED6),
+                            gingham: color(0xD99C92, 0.6), stitch: color(0xC58178), petal: color(0xDB8E84), flowerCenter: color(0xEEC57F),
+                            leaf: color(0x92AC86), card: color(0xFFFFFF), cardLine: color(0xDDA59C), spoonBowl: color(0xDDB78F),
+                            spoonHandle: color(0xC69B70), shadow: color(0x8A4F45, 0.30))),
+    ("AppIcon-Dark.png", Palette(backgroundTop: color(0x3D302E), backgroundBottom: color(0x1F1817), pocket: color(0xF8EAE3), hem: color(0xEDD0C7),
+                                 gingham: color(0xCF9389, 0.6), stitch: color(0xCB8378), petal: color(0xDD8D83), flowerCenter: color(0xEEC57F),
+                                 leaf: color(0x8FAA85), card: color(0xFFF7F2), cardLine: color(0xD9A097), spoonBowl: color(0xD7B08A),
+                                 spoonHandle: color(0xC0966E), shadow: color(0x000000, 0.45))),
     // 色付きは灰色の濃淡だけで描き、背景は黒にする
     ("AppIcon-Tinted.png", Palette(backgroundTop: nil, backgroundBottom: nil, pocket: color(0xFFFFFF), hem: color(0xDCDCDC),
                                    gingham: color(0x9A9A9A, 0.5), stitch: color(0x8C8C8C), petal: color(0x7C7C7C), flowerCenter: color(0xC4C4C4),
