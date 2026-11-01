@@ -30,6 +30,7 @@ Firebase の設定ファイル（`RecipePocket/Resources/GoogleService-Info.plis
 | `RecipeKit/Sources/RecipeUI/` | 本体と共有拡張が使う登録・編集のフォーム |
 | `Config/` | Info.plist、App Group の設定、ビルド設定（xcconfig） |
 | `web/` | 公開する Web ページ（利用条件・プライバシー説明・問い合わせ）と `app-ads.txt` を作る仕組み。文面はアプリと同じ `RecipePocket/Support/PolicyText.swift` を使い、運営者名・問い合わせ先・AdMob のパブリッシャー ID は `Config/Local.xcconfig` から入れる |
+| `tools/app-icon/` | アプリのアイコン（明るい表示・ダーク表示・色付きの3枚）を描くスクリプト。色を変えたら、`swift tools/app-icon/make_icon.swift RecipePocket/Resources/Assets.xcassets/AppIcon.appiconset` で書き出し直す |
 
 ## テスト
 
