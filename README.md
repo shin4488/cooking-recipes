@@ -14,7 +14,7 @@
 
 Firebase の設定ファイル（`RecipePocket/Resources/GoogleService-Info.plist`）を置かなければ、解析は送信しない。Debug ビルドでは、設定ファイルがあっても起動引数 `-FIRDebugEnabled` を付けたときだけ送信する。
 
-広告（AdMob）は、`Config/Local.xcconfig` に ID を入れていない Debug ビルドでは、Google のテスト用の ID で一覧の下に表示する。欧州向けの同意の画面をシミュレータで確かめるときは、Debug ビルドに起動引数 `-UMPDebugGeographyEEA` を付ける。同意の選択は、アプリを削除すると消える。
+広告（AdMob）は、Debug ビルドでは常に Google のテスト用の ID で一覧の下に表示する。欧州向けの同意の画面をシミュレータで確かめるときは、Debug ビルドに起動引数 `-UMPDebugGeographyEEA` を付ける。同意の選択は、アプリを削除すると消える。
 
 件数の多い一覧や検索を確かめるときは、Debug ビルドで起動引数 `-SeedRecipes 5000` を付けると、記録が空の場合に見本を5,000件入れる。App Store 用のスクリーンショットを撮るときは、`-SeedScreenshotRecipes` を付けると、実在しない見本のサイトの記録を入れ、広告を表示しない。
 

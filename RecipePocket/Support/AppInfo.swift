@@ -5,7 +5,7 @@ import UIKit
 enum AppInfo {
     static var operatorName: String? { infoValue("RPOperatorName") }
     static var contactEmail: String? { infoValue("RPContactEmail") }
-    /// AdMob のアプリ ID と、一覧のバナーの広告ユニット ID。Debug ビルドで値を入れていなければ、Google のテスト用の ID になる
+    /// AdMob のアプリ ID と、一覧のバナーの広告ユニット ID。Debug ビルドでは常に Google のテスト用の ID になる
     static var adMobAppID: String? { infoValue("GADApplicationIdentifier") }
     static var adMobBannerUnitID: String? { infoValue("RPAdMobBannerUnitID") }
 

@@ -8,8 +8,8 @@ ADMOB_PUBLISHER_ID =
 
 #include? "Local.xcconfig"
 
-// Info.plist に入れる AdMob の ID。Debug ビルドで値が空なら Google のテスト用の ID を使い、Release ビルドではテスト用の ID を使わない
-ADMOB_TEST_APP_ID[config=Debug] = ca-app-pub-3940256099942544~1458002511
-ADMOB_TEST_BANNER_UNIT_ID[config=Debug] = ca-app-pub-3940256099942544/2435281174
-ADMOB_APP_ID_RESOLVED = $(ADMOB_APP_ID:default=$(ADMOB_TEST_APP_ID))
-ADMOB_BANNER_UNIT_ID_RESOLVED = $(ADMOB_BANNER_UNIT_ID:default=$(ADMOB_TEST_BANNER_UNIT_ID))
+// Info.plist に入れる AdMob の ID。Debug ビルドは、開発中の端末で本番の広告を表示・タップしないよう、常に Google のテスト用の ID を使う
+ADMOB_APP_ID_RESOLVED = $(ADMOB_APP_ID)
+ADMOB_APP_ID_RESOLVED[config=Debug] = ca-app-pub-3940256099942544~1458002511
+ADMOB_BANNER_UNIT_ID_RESOLVED = $(ADMOB_BANNER_UNIT_ID)
+ADMOB_BANNER_UNIT_ID_RESOLVED[config=Debug] = ca-app-pub-3940256099942544/2435281174
