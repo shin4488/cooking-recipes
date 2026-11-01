@@ -18,10 +18,21 @@ struct SettingsView: View {
                         LabeledContent("ごみ箱", value: "\(store.trash.count.formatted())件")
                     }
                 }
+                Section("広告") {
+                    // 同意が必要な地域で、UMP が変更の入口を求めているときだけ出す
+                    if AppAds.shared.requiresPrivacyOptions {
+                        Button("広告の同意の設定") { AppAds.shared.presentPrivacyOptions() }
+                    }
+                    mailRow(
+                        "不適切な広告を報告",
+                        subject: "レシピぽけっと：不適切な広告の報告",
+                        guide: "表示された広告の内容（広告主・商品など）と、表示された日時を書いてください。広告の画面のスクリーンショットがあれば添付してください。"
+                    )
+                }
                 Section("このアプリについて") {
                     NavigationLink("プライバシーと外部送信") { PrivacyView() }
                     NavigationLink("利用条件") { TermsView() }
-                    contactRow
+                    mailRow("問い合わせ", subject: "レシピぽけっとへのお問い合わせ")
                     NavigationLink("ライセンス") { LicensesView() }
                     LabeledContent("バージョン", value: AppInfo.version)
                 }
@@ -48,16 +59,17 @@ struct SettingsView: View {
         .analyticsScreen(.settings)
     }
 
+    /// 問い合わせ先へのメールを作る行。問い合わせ先を入れていないビルドでは「未設定」と表示する
     @ViewBuilder
-    private var contactRow: some View {
-        if let url = AppInfo.contactMailURL(subject: "レシピぽけっとへのお問い合わせ") {
-            Button("問い合わせ（メール）") {
+    private func mailRow(_ title: String, subject: String, guide: String? = nil) -> some View {
+        if let url = AppInfo.contactMailURL(subject: subject, guide: guide) {
+            Button("\(title)（メール）") {
                 openURL(url) { accepted in
                     if !accepted { showsMailUnavailable = true }
                 }
             }
         } else {
-            LabeledContent("問い合わせ", value: "未設定")
+            LabeledContent(title, value: "未設定")
         }
     }
 }
