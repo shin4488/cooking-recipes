@@ -18,6 +18,8 @@ struct RecipePocketApp: App {
                 if let store {
                     RecipeListView()
                         .environment(store)
+                        .environment(store.search)
+                        .environment(store.toasts)
                 } else if openFailed {
                     ContentUnavailableView(
                         "保存データを開けませんでした",

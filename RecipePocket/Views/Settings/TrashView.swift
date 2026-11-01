@@ -5,6 +5,7 @@ import SwiftUI
 /// 削除した記録を30日間保持し、戻すか完全に削除する
 struct TrashView: View {
     @Environment(RecipeStore.self) private var store
+    @Environment(ToastCenter.self) private var toasts
     @State private var pendingDeletion: TrashedRecipe?
     @State private var showsEmptyConfirmation = false
     @State private var blockedRestore: Recipe?
@@ -113,7 +114,7 @@ struct TrashView: View {
     private func restore(_ item: TrashedRecipe) {
         switch store.restore(item) {
         case .duplicate(let existing): blockedRestore = existing
-        case .failed: store.showToast("戻せませんでした")
+        case .failed: toasts.show("戻せませんでした")
         case .restored: break
         }
     }

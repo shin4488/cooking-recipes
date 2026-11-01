@@ -6,6 +6,8 @@ import UIKit
 /// レシピ一覧。検索・並べ替え・各操作の起点
 struct RecipeListView: View {
     @Environment(RecipeStore.self) private var store
+    @Environment(SearchStore.self) private var search
+    @Environment(ToastCenter.self) private var toasts
     @Environment(\.openURL) private var openURL
     @State private var editor: EditorTarget?
     @State private var showsSettings = false
@@ -18,11 +20,11 @@ struct RecipeListView: View {
         NavigationStack {
             ScrollViewReader { proxy in
                 recipeList
-                    .onChange(of: store.focusedRecipeID) { _, id in
+                    .onChange(of: search.focusedRecipeID) { _, id in
                         guard let id else { return }
                         withAnimation { proxy.scrollTo(id, anchor: .center) }
                         highlight(id)
-                        store.focusedRecipeID = nil
+                        search.focusedRecipeID = nil
                     }
             }
             .navigationTitle("レシピぽけっと")
@@ -47,7 +49,7 @@ struct RecipeListView: View {
     private var recipeList: some View {
         List {
             Section {
-                ForEach(store.results) { recipe in
+                ForEach(search.results) { recipe in
                     RecipeRowView(
                         recipe: recipe,
                         isReordering: isReordering,
@@ -84,7 +86,7 @@ struct RecipeListView: View {
             Button(isReordering ? "完了" : "並べ替え") {
                 withAnimation { isReordering.toggle() }
             }
-            .disabled(!isReordering && store.results.count < 2)
+            .disabled(!isReordering && search.results.count < 2)
         }
         ToolbarItemGroup(placement: .topBarTrailing) {
             Button {
@@ -114,13 +116,13 @@ struct RecipeListView: View {
                 Button("レシピを追加") { editor = .add }
                     .buttonStyle(.borderedProminent)
             }
-        } else if store.results.isEmpty {
+        } else if search.results.isEmpty {
             ContentUnavailableView {
                 Label("条件に合うレシピはありません", systemImage: "magnifyingglass")
             } description: {
                 Text("検索条件を減らすか、すべて解除してください。")
             } actions: {
-                Button("条件をすべて解除") { store.clearSearch() }
+                Button("条件をすべて解除") { search.clear() }
                     .buttonStyle(.bordered)
             }
         }
@@ -129,7 +131,7 @@ struct RecipeListView: View {
     private func actions(for recipe: Recipe) -> RecipeRowView.Actions {
         RecipeRowView.Actions(
             open: { open(recipe) },
-            searchTag: { store.addSearchCondition(tag: $0) },
+            searchTag: { search.addCondition(tag: $0) },
             toggleTags: {
                 if expandedTagIDs.contains(recipe.id) { expandedTagIDs.remove(recipe.id) } else { expandedTagIDs.insert(recipe.id) }
             },
@@ -144,11 +146,11 @@ struct RecipeListView: View {
     /// 既定のブラウザ、またはOSの設定に応じた対応アプリで開く
     private func open(_ recipe: Recipe) {
         guard let url = URL(string: recipe.url) else {
-            store.showToast("このURLは開けません")
+            toasts.show("このURLは開けません")
             return
         }
         openURL(url) { accepted in
-            if !accepted { store.showToast("このURLを開けるアプリがありません") }
+            if !accepted { toasts.show("このURLを開けるアプリがありません") }
         }
     }
 

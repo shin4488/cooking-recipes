@@ -6,6 +6,7 @@ import SwiftUI
 /// 登録・編集画面。広告は表示しない
 struct RecipeEditorView: View {
     @Environment(RecipeStore.self) private var store
+    @Environment(SearchStore.self) private var search
     @Environment(\.dismiss) private var dismiss
     @State private var model: RecipeFormModel
     @State private var alerts = RecipeSaveAlerts()
@@ -65,6 +66,6 @@ struct RecipeEditorView: View {
     /// 画面を閉じ、一覧でその記録の表示位置を合わせる
     private func show(_ recipe: Recipe) {
         dismiss()
-        store.focus(on: recipe)
+        search.focus(on: recipe)
     }
 }
