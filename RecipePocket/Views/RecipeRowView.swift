@@ -22,6 +22,7 @@ struct RecipeRowView: View {
     let isReordering: Bool
     let tagsExpanded: Bool
     let actions: Actions
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
@@ -54,7 +55,8 @@ struct RecipeRowView: View {
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .font(.title3)
-                        .foregroundStyle(Color.secondary)
+                        // ダーク表示では、細い線の印が二次的な文字の灰色だと暗い背景に沈むため、明るい灰色にする
+                        .foregroundStyle(colorScheme == .dark ? Color.primary.opacity(0.7) : Color.secondary)
                         .frame(minWidth: 44, minHeight: 44)
                         .contentShape(.rect)
                 }

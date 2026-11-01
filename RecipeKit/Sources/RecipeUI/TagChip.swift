@@ -25,9 +25,9 @@ public struct TagChip: View {
         .padding(.vertical, 5)
         .foregroundStyle(.tint)
         // 文字とのコントラスト比 4.5:1 以上を保つ濃さ。暗い背景では薄いとタグの形が見えないため、ダーク表示では濃くする
-        .background(.tint.opacity(colorScheme == .dark ? 0.18 : 0.08), in: .capsule)
+        .background(.tint.opacity(colorScheme == .dark ? 0.22 : 0.08), in: .capsule)
         // ダーク表示では、アクセント色のままだと暗い背景で文字がくすむため、白を混ぜて明るくする
-        .tint(colorScheme == .dark ? Color.accentColor.mix(with: .white, by: 0.3) : nil)
+        .tint(colorScheme == .dark ? Color.accentColor.mix(with: .white, by: 0.45) : nil)
         .contentShape(.capsule)
     }
 }
