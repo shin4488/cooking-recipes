@@ -161,6 +161,31 @@ struct TitleFetchRepositoryTests {
         #expect(try repository.recipes().first?.needsTitleFetch == true)
     }
 
+    @Test("停止期限・試行日時を読めないときは通信せず、取得を待つ状態のまま残す。読めるようになれば取得する")
+    func noFetchWhenHistoryUnreadable() throws {
+        let (titleFetch, history, repository) = try failingTitleFetch()
+        let recipe = try repository.add(url: "https://www.sirogohan.com/recipe/nikujyaga/", title: .none, tags: [], now: now)
+        history.failsReading = true
+        #expect(titleFetch.begin(recipe, now: now) == .notNeeded)
+        #expect(try titleFetch.recipesAwaitingFetch().map(\.id) == [recipe.id])
+
+        history.failsReading = false
+        guard case .fetch = titleFetch.begin(recipe, now: now) else {
+            Issue.record("読めるようになっても取得を始めなかった")
+            return
+        }
+    }
+
+    @Test("試行日時を書き込めないときは通信せず、取得を待つ状態に戻す")
+    func noFetchWhenAttemptUnwritable() throws {
+        let (titleFetch, history, repository) = try failingTitleFetch()
+        let recipe = try repository.add(url: "https://www.sirogohan.com/recipe/nikujyaga/", title: .none, tags: [], now: now)
+        history.failsWriting = true
+        #expect(titleFetch.begin(recipe, now: now) == .notNeeded)
+        #expect(try titleFetch.recipesAwaitingFetch().map(\.id) == [recipe.id])
+        #expect(try history.lastAttempt(url: recipe.url) == nil)
+    }
+
     @Test("拒否したサイトの停止は、あとから短い期限を記録しても長いほうを保つ")
     func pauseKeepsLaterEnd() throws {
         try titleFetch.history.pause(siteID: "sirogohan", until: now.addingTimeInterval(100))
@@ -195,5 +220,50 @@ struct TitleFetchRepositoryTests {
 
         try titleFetch.purgeHistory(now: now.addingTimeInterval(day))
         #expect(try titleFetch.history.lastAttempt(url: url) == nil)
+    }
+
+    /// 通信制御の記録の読み書きを失敗させられる TitleFetchRepository と、その差し替え、同じ保存先の RecipeRepository
+    private func failingTitleFetch() throws -> (TitleFetchRepository, FailingHistory, RecipeRepository) {
+        let container = try RecipeContainer.inMemory()
+        let history = FailingHistory(base: StoredTitleFetchHistory(container: container))
+        return (TitleFetchRepository(container: container, history: history), history, RecipeRepository(container: container))
+    }
+}
+
+/// 通信制御の記録の読み書きを失敗させる差し替え
+@MainActor
+private final class FailingHistory: TitleFetchHistory {
+    struct Failure: Error {}
+
+    let base: StoredTitleFetchHistory
+    var failsReading = false
+    var failsWriting = false
+
+    init(base: StoredTitleFetchHistory) {
+        self.base = base
+    }
+
+    func lastAttempt(url: String) throws -> Date? {
+        if failsReading { throw Failure() }
+        return try base.lastAttempt(url: url)
+    }
+
+    func recordAttempt(url: String, at date: Date) throws {
+        if failsWriting { throw Failure() }
+        try base.recordAttempt(url: url, at: date)
+    }
+
+    func pauseEnd(siteID: String) throws -> Date? {
+        if failsReading { throw Failure() }
+        return try base.pauseEnd(siteID: siteID)
+    }
+
+    func pause(siteID: String, until: Date) throws {
+        if failsWriting { throw Failure() }
+        try base.pause(siteID: siteID, until: until)
+    }
+
+    func purge(now: Date) throws {
+        try base.purge(now: now)
     }
 }

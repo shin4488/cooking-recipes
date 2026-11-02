@@ -8,12 +8,13 @@ public enum TitleFetchStart: Equatable, Sendable {
     case fetch(Recipe, SupportedSite)
     /// 拒否したサイトへの取得を止めている間か、同じURLを24時間以内に試したため、通信しない。取得を待つ記録と取得中の記録は「取得失敗」にする
     case skipped
-    /// 通信しない。取得の対象でないか、「取得中」にできなかった（記録が見つからない・書き込めないなど）
+    /// 通信しない。取得の対象でないか、「取得中」にできなかった（記録が見つからない・書き込めないなど）か、通信制御の記録を読み書きできなかった。
+    /// 取得を待つ記録は、そのまま残す
     case notNeeded
 }
 
-/// 対応サイトからのタイトルの自動取得に使う記録の読み書き。取得を待つ記録の状態と、通信制御のためのURLごとの最終試行日時・サイトごとの停止を扱う。
-/// 通信は呼び出し側が行う。記録を読み書きできないときも取得の手順は続け、読めない試行日時・停止はないものとして扱う
+/// 対応サイトからのタイトルの自動取得に使う記録の読み書き。取得を待つ記録の状態と、通信制御のためのURLごとの最終試行日時・サイトごとの停止（TitleFetchHistory）を扱う。
+/// 通信は呼び出し側が行う。通信制御の記録を読み書きできないときは、通信してよいか分からないため通信しない
 @MainActor
 public final class TitleFetchRepository {
     private let container: ModelContainer
@@ -36,20 +37,32 @@ public final class TitleFetchRepository {
         return try container.makeContext().fetch(descriptor).map(\.recipe).filter(\.needsTitleFetch)
     }
 
-    /// 取得を始める。拒否したサイトへの取得を止めている間と、同じURLを24時間以内に試した場合は、通信せずに「取得失敗」にする
+    /// 取得を始める。拒否したサイトへの取得を止めている間と、同じURLを24時間以内に試した場合は、通信せずに「取得失敗」にする。
+    /// 停止期限・試行日時を読めないときと、試行日時を書き込めないときは、通信せずに取得を待つ状態のまま残し、次に始めるときに判断し直す
     public func begin(_ recipe: Recipe, now: Date = .now) -> TitleFetchStart {
         guard let site = SupportedSite.fetchableSite(for: recipe.url) else { return .notNeeded }
-        let canFetch = TitleFetchThrottle.canFetch(
-            pausedUntil: try? history.pauseEnd(siteID: site.id),
-            lastAttempt: try? history.lastAttempt(url: recipe.url),
-            now: now
-        )
+        let canFetch: Bool
+        do {
+            canFetch = TitleFetchThrottle.canFetch(
+                pausedUntil: try history.pauseEnd(siteID: site.id),
+                lastAttempt: try history.lastAttempt(url: recipe.url),
+                now: now
+            )
+        } catch {
+            return .notNeeded
+        }
         guard canFetch else {
             try? markSkipped(id: recipe.id)
             return .skipped
         }
         guard let fetching = try? markFetching(id: recipe.id) else { return .notNeeded }
-        try? history.recordAttempt(url: fetching.url, at: now)
+        do {
+            try history.recordAttempt(url: fetching.url, at: now)
+        } catch {
+            // 試行日時を残せないと24時間の間隔を守れないため、取得中にした記録を戻す
+            try? markAwaiting(id: recipe.id)
+            return .notNeeded
+        }
         return .fetch(fetching, site)
     }
 
@@ -86,6 +99,14 @@ public final class TitleFetchRepository {
         record.titleFetchStateValue = TitleFetchState.fetching.rawValue
         try context.save()
         return record.recipe
+    }
+
+    /// 取得中にした記録を、取得を待つ状態に戻す
+    private func markAwaiting(id: UUID) throws {
+        let context = container.makeContext()
+        guard let record = try context.recipeRecord(id), record.titleFetchStateValue == TitleFetchState.fetching.rawValue else { return }
+        record.titleFetchStateValue = TitleFetchState.notFetched.rawValue
+        try context.save()
     }
 
     /// 取得を待つ記録か取得中の記録を「取得失敗」にする
