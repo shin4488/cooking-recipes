@@ -2,17 +2,17 @@ import SwiftUI
 
 /// 保存などの結果を数秒だけ表示する。読み上げでも伝える
 struct ToastView: View {
-    @Environment(RecipeStore.self) private var store
+    @Environment(ToastCenter.self) private var toasts
 
     var body: some View {
         ZStack {
-            if let toast = store.toast {
+            if let toast = toasts.toast {
                 HStack(spacing: 12) {
                     Text(toast.message)
                         .font(.subheadline)
                     if let title = toast.actionTitle, let action = toast.action {
                         Button(title) {
-                            store.toast = nil
+                            toasts.toast = nil
                             action()
                         }
                         .font(.subheadline.bold())
@@ -27,10 +27,10 @@ struct ToastView: View {
                 .task(id: toast.id) {
                     AccessibilityNotification.Announcement(toast.message).post()
                     try? await Task.sleep(for: .seconds(toast.action == nil ? 2 : 5))
-                    withAnimation { if store.toast?.id == toast.id { store.toast = nil } }
+                    withAnimation { if toasts.toast?.id == toast.id { toasts.toast = nil } }
                 }
             }
         }
-        .animation(.default, value: store.toast)
+        .animation(.default, value: toasts.toast)
     }
 }

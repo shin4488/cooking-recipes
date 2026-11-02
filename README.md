@@ -22,12 +22,12 @@ Firebase の設定ファイル（`RecipePocket/Resources/GoogleService-Info.plis
 
 | 場所 | 内容 |
 | --- | --- |
-| `RecipePocket/` | 本体アプリの画面と、一覧・検索・タイトル取得の状態、広告と同意（`Support/AppAds.swift`・`Views/AdBannerView.swift`） |
+| `RecipePocket/` | 本体アプリの画面と状態。記録の読み込みと操作は `Store/RecipeStore.swift`、検索の条件と絞り込んだ一覧は `Store/SearchStore.swift`、画面下部の案内は `Store/ToastCenter.swift`、タイトル取得は `Store/TitleFetchCoordinator.swift`。広告と同意は `Support/AppAds.swift`・`Views/AdBannerView.swift`。利用条件・プライバシー説明の文面と、文面で案内する設定の項目名は `Support/PolicyText.swift` |
 | `ShareExtension/` | 共有シートから保存する画面 |
 | `Shared/` | 本体と共有拡張の両方に入れる素材（アクセントカラー） |
 | `RecipeKit/Sources/RecipeCore/` | URLの検証と重複判定、タグ、検索、対応サイトからのタイトル取得。画面と保存に依存しない |
-| `RecipeKit/Sources/RecipeData/` | 端末内の保存（SwiftData）。本体と共有拡張が App Group の同じ保存先を使う。一覧とごみ箱の記録は `RecipeRepository`、タイトルの自動取得に使う記録と取得してよいかの判断は `TitleFetchRepository`（本体だけが使う）が扱う |
-| `RecipeKit/Sources/RecipeUI/` | 本体と共有拡張が使う登録・編集のフォーム |
+| `RecipeKit/Sources/RecipeData/` | 端末内の保存（SwiftData）。本体と共有拡張が App Group の同じ保存先を使う。一覧とごみ箱の記録は `RecipeRepository`、タイトルの自動取得に使う記録と取得してよいかの判断は `TitleFetchRepository`（本体だけが使う）が扱う。保存とごみ箱から戻す操作の結果（同じURLの記録がある・失敗した）は `RecipeSaveResult`・`RecipeRestoreResult` に振り分ける |
+| `RecipeKit/Sources/RecipeUI/` | 本体と共有拡張が使う登録・編集のフォーム、保存できなかったときの確認（`RecipeSaveAlerts`）、記録の表記（タイトル未設定の表示・サイト名） |
 | `Config/` | Info.plist、App Group の設定、ビルド設定（xcconfig） |
 | `web/` | 公開する Web ページ（利用条件・プライバシー説明・問い合わせ）と `app-ads.txt` を作る仕組み。文面はアプリと同じ `RecipePocket/Support/PolicyText.swift` を使い、運営者名・問い合わせ先・AdMob のパブリッシャー ID は `Config/Local.xcconfig` から入れる |
 | `tools/app-icon/` | アプリのアイコン（明るい表示・ダーク表示・色付きの3枚）を描くスクリプト。色を変えたら、`swift tools/app-icon/make_icon.swift RecipePocket/Resources/Assets.xcassets/AppIcon.appiconset` で書き出し直す |

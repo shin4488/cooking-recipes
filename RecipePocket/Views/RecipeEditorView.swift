@@ -6,14 +6,14 @@ import SwiftUI
 /// 登録・編集画面。広告は表示しない
 struct RecipeEditorView: View {
     @Environment(RecipeStore.self) private var store
+    @Environment(SearchStore.self) private var search
     @Environment(\.dismiss) private var dismiss
     @State private var model: RecipeFormModel
-    @State private var duplicate: RecipeDuplicate?
+    @State private var alerts = RecipeSaveAlerts()
     @State private var showsDiscardConfirmation = false
-    @State private var saveFailed = false
 
-    init(target: EditorTarget, savedTags: [String]) {
-        switch target {
+    init(mode: RecipeFormModel.Mode, savedTags: [String]) {
+        switch mode {
         case .add:
             _model = State(initialValue: RecipeFormModel(urlChoices: [], sharedTitle: nil, savedTags: savedTags))
         case .edit(let recipe):
@@ -34,22 +34,19 @@ struct RecipeEditorView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("保存", action: save)
-                            .disabled(model.url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                            .disabled(!model.canSave)
                     }
                 }
                 .confirmationDialog("入力した内容を破棄しますか？", isPresented: $showsDiscardConfirmation, titleVisibility: .visible) {
                     Button("破棄する", role: .destructive) { dismiss() }
                     Button("編集を続ける", role: .cancel) {}
                 }
-                .alert(duplicateTitle, isPresented: duplicateBinding, presenting: duplicate) { duplicate in
-                    duplicateActions(duplicate)
-                } message: { duplicate in
-                    Text(duplicateMessage(duplicate))
-                }
-                .alert("保存できませんでした", isPresented: $saveFailed) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text("入力した内容は残っています。もう一度お試しください。")
+                .recipeSaveAlerts(alerts) { recipe in
+                    Button("登録済みのレシピを表示") { show(recipe) }
+                } restore: {
+                    store.restore($0)
+                } restored: { recipe in
+                    show(recipe)
                 }
         }
         .interactiveDismissDisabled(model.hasChanges)
@@ -58,57 +55,17 @@ struct RecipeEditorView: View {
 
     private func save() {
         guard let output = model.makeOutput() else { return }
-        let result: SaveResult
-        switch model.mode {
-        case .add: result = store.add(output)
-        case .edit(let recipe): result = store.update(recipe, with: output)
+        let result = switch model.mode {
+        case .add: store.add(output)
+        case .edit(let recipe): store.update(recipe, with: output)
         }
-        switch result {
-        case .saved: dismiss()
-        case .duplicate(let found): duplicate = found
-        case .failed: saveFailed = true
-        }
+        alerts.show(result)
+        if case .saved = result { dismiss() }
     }
 
-    private var duplicateBinding: Binding<Bool> {
-        Binding { duplicate != nil } set: { if !$0 { duplicate = nil } }
-    }
-
-    private var duplicateTitle: String {
-        switch duplicate {
-        case .trashed: "同じURLのレシピがごみ箱にあります"
-        default: "同じURLのレシピが登録済みです"
-        }
-    }
-
-    private func duplicateMessage(_ duplicate: RecipeDuplicate) -> String {
-        switch duplicate {
-        case .active(let recipe):
-            "「\(recipe.displayTitle)」として保存されています。この内容は保存していません。"
-        case .trashed(let trashed):
-            "「\(trashed.recipe.displayTitle)」をごみ箱から戻すか、取り消してください。戻す場合、この画面で入力した内容は保存しません。"
-        }
-    }
-
-    @ViewBuilder
-    private func duplicateActions(_ duplicate: RecipeDuplicate) -> some View {
-        switch duplicate {
-        case .active(let recipe):
-            Button("登録済みのレシピを表示") {
-                dismiss()
-                store.focus(on: recipe)
-            }
-            Button("入力に戻る", role: .cancel) {}
-        case .trashed(let trashed):
-            Button("ごみ箱から戻す") {
-                if case .restored(let recipe) = store.restore(trashed) {
-                    dismiss()
-                    store.focus(on: recipe)
-                } else {
-                    saveFailed = true
-                }
-            }
-            Button("取消", role: .cancel) {}
-        }
+    /// 画面を閉じ、一覧でその記録の表示位置を合わせる
+    private func show(_ recipe: Recipe) {
+        dismiss()
+        search.focus(on: recipe)
     }
 }

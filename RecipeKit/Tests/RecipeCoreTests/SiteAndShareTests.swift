@@ -30,15 +30,6 @@ struct SupportedSiteTests {
         #expect(SupportedSite.fetchableSite(for: url) == nil)
     }
 
-    @Test("一覧ではキユーピーなど対応サイトの名前を併記し、他はホスト名を示す")
-    func siteLabel() {
-        let kewpie = Recipe(url: "https://www.kewpie.co.jp/recipes/recipe/QP10220/", title: "ポテトサラダ", titleSource: .fetched, titleFetchState: .fetched, tags: [], sortKey: 0, createdAt: .now, updatedAt: .now)
-        #expect(kewpie.siteLabel == "キユーピー")
-        var other = kewpie
-        other.url = "https://cooking.example.com/a"
-        #expect(other.siteLabel == "cooking.example.com")
-    }
-
     @Test("タイトルの末尾にあるサイト名を、区切りごと除く", arguments: [
         ("kewpie", "鶏むね肉のてりマヨ焼きのレシピ・作り方 | とっておきレシピ | キユーピー", "鶏むね肉のてりマヨ焼きのレシピ・作り方"),
         ("mizkan", "納豆豚汁のレシピ・作り方 ｜ おうちレシピ | ミツカングループ", "納豆豚汁のレシピ・作り方"),

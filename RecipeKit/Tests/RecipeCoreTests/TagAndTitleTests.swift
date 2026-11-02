@@ -87,11 +87,4 @@ struct TitleRulesTests {
         #expect(TitleRules.acceptReceived(fiveHundred + "あ") == nil)
         #expect(TitleRules.acceptReceived(" \n ") == nil)
     }
-
-    @Test("未設定なら「タイトル未設定」と表示し、ホスト名は加えない")
-    func displayTitle() {
-        #expect(TitleRules.displayTitle(nil) == "タイトル未設定")
-        #expect(TitleRules.displayTitle("") == "タイトル未設定")
-        #expect(TitleRules.displayTitle("肉じゃが") == "肉じゃが")
-    }
 }

@@ -10,9 +10,8 @@ struct ShareRecipeView: View {
     let onFinish: () -> Void
     let onCancel: () -> Void
 
-    @State private var duplicate: RecipeDuplicate?
+    @State private var alerts = RecipeSaveAlerts()
     @State private var saved = false
-    @State private var saveFailed = false
 
     var body: some View {
         NavigationStack {
@@ -25,7 +24,7 @@ struct ShareRecipeView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("保存", action: save)
-                            .disabled(saved || model.url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                            .disabled(saved || !model.canSave)
                     }
                 }
                 .overlay {
@@ -37,61 +36,21 @@ struct ShareRecipeView: View {
                             .transition(.scale.combined(with: .opacity))
                     }
                 }
-                .alert(duplicateTitle, isPresented: duplicateBinding, presenting: duplicate) { duplicate in
-                    switch duplicate {
-                    case .active:
-                        Button("共有を閉じる", action: onCancel)
-                        Button("入力に戻る", role: .cancel) {}
-                    case .trashed(let trashed):
-                        Button("ごみ箱から戻す") { restore(trashed) }
-                        Button("取消", role: .cancel) {}
-                    }
-                } message: { duplicate in
-                    switch duplicate {
-                    case .active(let recipe):
-                        Text("「\(recipe.displayTitle)」として保存されています。この内容は保存していません。")
-                    case .trashed(let trashed):
-                        Text("「\(trashed.recipe.displayTitle)」をごみ箱から戻すか、取り消してください。戻す場合、この画面で入力した内容は保存しません。")
-                    }
-                }
-                .alert("保存できませんでした", isPresented: $saveFailed) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text("入力した内容は残っています。もう一度お試しください。")
+                .recipeSaveAlerts(alerts) { _ in
+                    Button("共有を閉じる", action: onCancel)
+                } restore: { trashed in
+                    RecipeRestoreResult { try repository.restore(id: trashed.id) }
+                } restored: { _ in
+                    showSavedAndFinish()
                 }
         }
-    }
-
-    private var duplicateTitle: String {
-        switch duplicate {
-        case .trashed: "同じURLのレシピがごみ箱にあります"
-        default: "同じURLのレシピが登録済みです"
-        }
-    }
-
-    private var duplicateBinding: Binding<Bool> {
-        Binding { duplicate != nil } set: { if !$0 { duplicate = nil } }
     }
 
     private func save() {
         guard let output = model.makeOutput() else { return }
-        do {
-            try repository.add(url: output.url, title: output.title, tags: output.tags)
-            showSavedAndFinish()
-        } catch RecipeRepositoryError.duplicate(let found) {
-            duplicate = found
-        } catch {
-            saveFailed = true
-        }
-    }
-
-    private func restore(_ trashed: TrashedRecipe) {
-        do {
-            try repository.restore(id: trashed.id)
-            showSavedAndFinish()
-        } catch {
-            saveFailed = true
-        }
+        let result = RecipeSaveResult { try repository.add(url: output.url, title: output.title, tags: output.tags) }
+        alerts.show(result)
+        if case .saved = result { showSavedAndFinish() }
     }
 
     private func showSavedAndFinish() {

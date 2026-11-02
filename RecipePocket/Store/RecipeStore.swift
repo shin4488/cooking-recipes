@@ -5,56 +5,32 @@ import RecipeData
 import RecipeUI
 import UIKit
 
-/// 画面下部に一時的に出す案内。操作を1つ付けられる
-struct Toast: Identifiable, Equatable {
-    let id = UUID()
-    let message: String
-    var actionTitle: String?
-    var action: (@MainActor () -> Void)?
-
-    static func == (lhs: Toast, rhs: Toast) -> Bool { lhs.id == rhs.id }
-}
-
-enum SaveResult {
-    case saved(Recipe)
-    case duplicate(RecipeDuplicate)
-    case failed
-}
-
-enum RestoreResult {
-    case restored(Recipe)
-    case duplicate(Recipe)
-    case failed
-}
-
-/// 一覧・検索・ごみ箱の状態と操作
+/// 一覧とごみ箱の記録と、記録を変える操作。操作の結果は画面下部の案内で伝え、読み込んだ一覧は検索に渡す
 @MainActor
 @Observable
 final class RecipeStore {
     private(set) var recipes: [Recipe] = []
-    private(set) var results: [Recipe] = []
     private(set) var trash: [TrashedRecipe] = []
     private(set) var savedTags: [String] = []
     private(set) var loadFailed = false
-    var search = SearchState() {
-        didSet { if search != oldValue { updateResults() } }
-    }
-    var toast: Toast?
-    /// 一覧で表示位置を合わせて目立たせる記録
-    var focusedRecipeID: UUID?
 
+    /// 検索の条件と、その条件で絞り込んだ一覧
+    @ObservationIgnored let search: SearchStore
+    /// 画面下部の案内
+    @ObservationIgnored let toasts: ToastCenter
     @ObservationIgnored private let repository: RecipeRepository
     @ObservationIgnored private let titleFetchRepository: TitleFetchRepository
     @ObservationIgnored private let analytics: AppAnalytics
     @ObservationIgnored private lazy var titleFetch = TitleFetchCoordinator(repository: titleFetchRepository) { [weak self] in
         self?.reload()
     }
-    @ObservationIgnored private var searchIndex = RecipeSearchIndex()
 
     init(repository: RecipeRepository, titleFetchRepository: TitleFetchRepository, analytics: AppAnalytics) {
         self.repository = repository
         self.titleFetchRepository = titleFetchRepository
         self.analytics = analytics
+        toasts = ToastCenter()
+        search = SearchStore(analytics: analytics, toasts: toasts)
         try? titleFetchRepository.resetInterrupted()
     }
 
@@ -76,55 +52,45 @@ final class RecipeStore {
             loadFailed = true
         }
         savedTags = TagRules.savedTags(in: recipes.map(\.tags))
-        updateResults()
+        search.update(recipes)
     }
 
     // MARK: - 登録・編集
 
-    func add(_ output: RecipeFormOutput) -> SaveResult {
+    func add(_ output: RecipeFormOutput) -> RecipeSaveResult {
         save(event: .recipeAdded(tagCount: output.tags.count)) {
             try repository.add(url: output.url, title: output.title, tags: output.tags)
         }
     }
 
-    func update(_ recipe: Recipe, with output: RecipeFormOutput) -> SaveResult {
+    func update(_ recipe: Recipe, with output: RecipeFormOutput) -> RecipeSaveResult {
         save(event: .recipeUpdated) {
             try repository.update(id: recipe.id, url: output.url, title: output.title, tags: output.tags)
         }
     }
 
-    private func save(event: AnalyticsEvent, _ operation: () throws -> Recipe) -> SaveResult {
-        do {
-            let recipe = try operation()
+    private func save(event: AnalyticsEvent, _ operation: () throws -> Recipe) -> RecipeSaveResult {
+        let result = RecipeSaveResult(operation)
+        if case .saved = result {
             analytics.log(event)
             reload()
-            showToast("保存しました")
+            toasts.show("保存しました")
             titleFetch.start()
-            return .saved(recipe)
-        } catch RecipeRepositoryError.duplicate(let duplicate) {
-            return .duplicate(duplicate)
-        } catch {
-            return .failed
         }
+        return result
     }
 
     func copyURL(of recipe: Recipe) {
         UIPasteboard.general.string = recipe.url
         analytics.log(.urlCopied)
-        showToast("URLをコピーしました")
-    }
-
-    /// 一覧で見つけやすいよう、検索条件を外して表示位置を合わせる
-    func focus(on recipe: Recipe) {
-        if !results.contains(where: { $0.id == recipe.id }) { search.removeAll() }
-        focusedRecipeID = recipe.id
+        toasts.show("URLをコピーしました")
     }
 
     // MARK: - 並べ替え
 
     /// 表示中の一覧（検索結果を含む）での移動を、全体の並び順に反映する
     func move(fromOffsets source: IndexSet, toOffset destination: Int) {
-        var list = results
+        var list = search.results
         guard let first = source.first, list.indices.contains(first) else { return }
         let moved = list[first]
         list.move(fromOffsets: source, toOffset: destination)
@@ -135,21 +101,21 @@ final class RecipeStore {
             try repository.move(id: moved.id, above: above, below: below)
             analytics.log(.recipeMoved)
         } catch {
-            showToast("並べ替えを保存できませんでした")
+            toasts.show("並べ替えを保存できませんでした")
         }
         reload()
     }
 
-    func canMoveUp(_ recipe: Recipe) -> Bool { results.first?.id != recipe.id }
-    func canMoveDown(_ recipe: Recipe) -> Bool { results.last?.id != recipe.id }
+    func canMoveUp(_ recipe: Recipe) -> Bool { search.results.first?.id != recipe.id }
+    func canMoveDown(_ recipe: Recipe) -> Bool { search.results.last?.id != recipe.id }
 
     func moveUp(_ recipe: Recipe) {
-        guard let index = results.firstIndex(of: recipe), index > 0 else { return }
+        guard let index = search.results.firstIndex(of: recipe), index > 0 else { return }
         move(fromOffsets: [index], toOffset: index - 1)
     }
 
     func moveDown(_ recipe: Recipe) {
-        guard let index = results.firstIndex(of: recipe), index < results.count - 1 else { return }
+        guard let index = search.results.firstIndex(of: recipe), index < search.results.count - 1 else { return }
         move(fromOffsets: [index], toOffset: index + 2)
     }
 
@@ -160,27 +126,23 @@ final class RecipeStore {
             try repository.moveToTrash(id: recipe.id)
             analytics.log(.recipeDeleted)
             reload()
-            toast = Toast(message: "ごみ箱に移動しました", actionTitle: "元に戻す") { [weak self] in
+            toasts.show("ごみ箱に移動しました", actionTitle: "元に戻す") { [weak self] in
                 guard let self, let trashed = trash.first(where: { $0.id == recipe.id }) else { return }
                 _ = restore(trashed)
             }
         } catch {
-            showToast("削除できませんでした")
+            toasts.show("削除できませんでした")
         }
     }
 
-    func restore(_ trashed: TrashedRecipe) -> RestoreResult {
-        do {
-            let recipe = try repository.restore(id: trashed.id)
+    func restore(_ trashed: TrashedRecipe) -> RecipeRestoreResult {
+        let result = RecipeRestoreResult { try repository.restore(id: trashed.id) }
+        if case .restored = result {
             analytics.log(.recipeRestored)
             reload()
-            showToast("一覧に戻しました")
-            return .restored(recipe)
-        } catch RecipeRepositoryError.duplicate(.active(let existing)) {
-            return .duplicate(existing)
-        } catch {
-            return .failed
+            toasts.show("一覧に戻しました")
         }
+        return result
     }
 
     func deletePermanently(_ trashed: TrashedRecipe) {
@@ -189,7 +151,7 @@ final class RecipeStore {
             analytics.log(.recipeDeletedPermanently)
             reload()
         } catch {
-            showToast("削除できませんでした")
+            toasts.show("削除できませんでした")
         }
     }
 
@@ -198,59 +160,9 @@ final class RecipeStore {
             let count = try repository.emptyTrash()
             analytics.log(.trashEmptied(count: count))
             reload()
-            showToast("\(count.formatted())件を完全に削除しました")
+            toasts.show("\(count.formatted())件を完全に削除しました")
         } catch {
-            showToast("削除できませんでした")
+            toasts.show("削除できませんでした")
         }
-    }
-
-    // MARK: - 検索
-
-    /// 入力欄の文字が変わったとき。日本語の変換中はチップにしない
-    func searchInputChanged(isComposing: Bool) {
-        guard !isComposing else { return }
-        var state = search
-        let chipCount = state.chips.count
-        let result = state.commitCompletedWords()
-        search = state
-        if search.chips.count > chipCount { analytics.log(.searchConditionAdded(fromTag: false)) }
-        if result == .limitReached { showSearchLimit() }
-    }
-
-    /// 入力中の語を確定してチップにする
-    func commitSearchInput() {
-        search.input += " "
-        searchInputChanged(isComposing: false)
-    }
-
-    func addSearchCondition(tag: String) {
-        switch search.addChip(tag) {
-        case .added: analytics.log(.searchConditionAdded(fromTag: true))
-        case .duplicate: break
-        case .limitReached: showSearchLimit()
-        }
-    }
-
-    func removeSearchChip(at index: Int) {
-        search.removeChip(at: index)
-    }
-
-    func clearSearch() {
-        search.removeAll()
-        analytics.log(.searchCleared)
-    }
-
-    private func showSearchLimit() {
-        showToast("検索条件は\(RecipeLimits.searchConditions)個・合計\(RecipeLimits.searchTotalLength)文字までです")
-    }
-
-    private func updateResults() {
-        results = searchIndex.results(in: recipes, matching: search.conditions)
-    }
-
-    // MARK: - 案内
-
-    func showToast(_ message: String) {
-        toast = Toast(message: message)
     }
 }
