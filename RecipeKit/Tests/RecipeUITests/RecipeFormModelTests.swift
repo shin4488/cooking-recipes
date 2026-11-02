@@ -148,4 +148,27 @@ struct RecipeFormNoteTests {
         let saved = RecipeEditing.updated(original, url: output.url, title: output.title, tags: output.tags, now: now)
         #expect((note != nil) == willFetch(saved), "案内 \(note?.id ?? "なし")・保存後 \(saved.titleSource) \(saved.titleFetchState)")
     }
+
+    @Test("登録の案内も、保存したときに本体が取得するかと合う。共有拡張から受け取ったタイトルがある場合も含む", arguments: [nil, "共有のタイトル"], Edit.allCases)
+    func addNoteMatchesSavedRecipe(sharedTitle: String?, edit: Edit) {
+        let model = RecipeFormModel(urlChoices: [sirogohan], sharedTitle: sharedTitle, savedTags: [])
+        switch edit {
+        case .nothing: break
+        case .typeTitle: model.title = "手入力"
+        case .typeAndClear: model.title = "仮"; model.title = ""
+        case .sameTitleAgain: model.title = "仮"; model.title = sharedTitle ?? ""
+        case .clearTitle: model.title = ""
+        case .toSupported: model.url = sirogohanOther
+        case .toOtherSupported: model.url = "https://www.kewpie.co.jp/recipes/recipe/QP00000001/"
+        case .toUnsupported: model.url = "https://example.org/b"
+        case .toSupportedThenTypeSame: model.url = sirogohanOther; model.title = sharedTitle ?? ""
+        }
+        let note = model.siteForTitleFetch
+        guard let output = model.makeOutput() else {
+            Issue.record("入力の検証に通らなかった")
+            return
+        }
+        let saved = RecipeEditing.newRecipe(url: output.url, title: output.title, tags: output.tags, sortKey: 0, now: now)
+        #expect((note != nil) == willFetch(saved), "案内 \(note?.id ?? "なし")・保存後 \(saved.titleSource) \(saved.titleFetchState)")
+    }
 }
