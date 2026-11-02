@@ -22,18 +22,12 @@ struct RecipeRowView: View {
     let isReordering: Bool
     let tagsExpanded: Bool
     let actions: Actions
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             VStack(alignment: .leading, spacing: 6) {
                 Button(action: actions.open) {
-                    // 強い色の文字が並ばないよう、タイトルは本文の色にする。未設定は太さで区別する。
-                    // ボタンの中では .primary がアクセントカラーになるため、Color.primary を指定する
-                    Text(recipe.displayTitle)
-                        .font(.headline)
-                        .fontWeight(recipe.title == nil ? .regular : nil)
-                        .foregroundStyle(Color.primary)
+                    RecipeTitleText(recipe: recipe)
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -53,12 +47,7 @@ struct RecipeRowView: View {
                 Menu {
                     menuItems
                 } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .font(.title3)
-                        // ダーク表示では、細い線の印が二次的な文字の灰色だと暗い背景に沈むため、明るい灰色にする
-                        .foregroundStyle(colorScheme == .dark ? Color.primary.opacity(0.7) : Color.secondary)
-                        .frame(minWidth: 44, minHeight: 44)
-                        .contentShape(.rect)
+                    RowMenuLabel()
                 }
                 .accessibilityLabel("「\(recipe.displayTitle)」の操作")
             }
@@ -124,5 +113,32 @@ struct RecipeRowView: View {
                     .accessibilityLabel(tagsExpanded ? "タグを折りたたむ" : "残りのタグ\(hiddenCount)件を表示")
             }
         }
+    }
+}
+
+/// 一覧とごみ箱の行のタイトル。強い色の文字が並ばないよう本文の色にし、未設定は太さで区別する。
+/// ボタンの中では .primary がアクセントカラーになるため、Color.primary を指定する
+struct RecipeTitleText: View {
+    let recipe: Recipe
+
+    var body: some View {
+        Text(recipe.displayTitle)
+            .font(.headline)
+            .fontWeight(recipe.title == nil ? .regular : nil)
+            .foregroundStyle(Color.primary)
+    }
+}
+
+/// 一覧とごみ箱の行の「⋯」の印
+struct RowMenuLabel: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        Image(systemName: "ellipsis.circle")
+            .font(.title3)
+            // ダーク表示では、細い線の印が二次的な文字の灰色だと暗い背景に沈むため、明るい灰色にする
+            .foregroundStyle(colorScheme == .dark ? Color.primary.opacity(0.7) : Color.secondary)
+            .frame(minWidth: 44, minHeight: 44)
+            .contentShape(.rect)
     }
 }
