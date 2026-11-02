@@ -17,9 +17,16 @@ public enum TitleFetchStart: Equatable, Sendable {
 @MainActor
 public final class TitleFetchRepository {
     private let container: ModelContainer
+    /// 通信制御の記録。テストでは、読み書きの失敗を起こす差し替えを渡す
+    let history: any TitleFetchHistory
 
-    public init(container: ModelContainer) {
+    public convenience init(container: ModelContainer) {
+        self.init(container: container, history: StoredTitleFetchHistory(container: container))
+    }
+
+    init(container: ModelContainer, history: any TitleFetchHistory) {
         self.container = container
+        self.history = history
     }
 
     /// 本体がタイトルを自動取得する記録。一覧の並び順で返す
@@ -33,8 +40,8 @@ public final class TitleFetchRepository {
     public func begin(_ recipe: Recipe, now: Date = .now) -> TitleFetchStart {
         guard let site = SupportedSite.fetchableSite(for: recipe.url) else { return .notNeeded }
         let canFetch = TitleFetchThrottle.canFetch(
-            pausedUntil: try? pauseEnd(siteID: site.id),
-            lastAttempt: try? lastAttempt(url: recipe.url),
+            pausedUntil: try? history.pauseEnd(siteID: site.id),
+            lastAttempt: try? history.lastAttempt(url: recipe.url),
             now: now
         )
         guard canFetch else {
@@ -42,7 +49,7 @@ public final class TitleFetchRepository {
             return .skipped
         }
         guard let fetching = try? markFetching(id: recipe.id) else { return .notNeeded }
-        try? recordAttempt(url: fetching.url, at: now)
+        try? history.recordAttempt(url: fetching.url, at: now)
         return .fetch(fetching, site)
     }
 
@@ -50,7 +57,7 @@ public final class TitleFetchRepository {
     @discardableResult
     public func finish(_ fetching: Recipe, site: SupportedSite, outcome: TitleFetchOutcome, now: Date = .now) -> Recipe? {
         if case .refused(_, let retryAfter) = outcome {
-            try? pause(siteID: site.id, until: TitleFetchThrottle.pauseEnd(refusedAt: now, retryAfter: retryAfter))
+            try? history.pause(siteID: site.id, until: TitleFetchThrottle.pauseEnd(refusedAt: now, retryAfter: retryAfter))
         }
         return try? apply(outcome, to: fetching, now: now)
     }
@@ -67,48 +74,7 @@ public final class TitleFetchRepository {
 
     /// 24時間を過ぎた試行日時と、期限を過ぎた停止を消す
     public func purgeHistory(now: Date = .now) throws {
-        let context = container.makeContext()
-        let attempts = try context.fetch(FetchDescriptor<TitleFetchAttempt>()).filter {
-            TitleFetchThrottle.canAttempt(lastAttempt: $0.attemptedAt, now: now)
-        }
-        let pauses = try context.fetch(FetchDescriptor<TitleFetchPause>()).filter {
-            !TitleFetchThrottle.isPaused(until: $0.until, now: now)
-        }
-        guard !attempts.isEmpty || !pauses.isEmpty else { return }
-        for item in attempts { context.delete(item) }
-        for item in pauses { context.delete(item) }
-        try context.save()
-    }
-
-    // MARK: - 試行日時と停止
-
-    func lastAttempt(url: String) throws -> Date? {
-        try container.makeContext().fetch(FetchDescriptor<TitleFetchAttempt>(predicate: #Predicate { $0.url == url })).first?.attemptedAt
-    }
-
-    func recordAttempt(url: String, at date: Date) throws {
-        let context = container.makeContext()
-        if let attempt = try context.fetch(FetchDescriptor<TitleFetchAttempt>(predicate: #Predicate { $0.url == url })).first {
-            attempt.attemptedAt = date
-        } else {
-            context.insert(TitleFetchAttempt(url: url, attemptedAt: date))
-        }
-        try context.save()
-    }
-
-    func pauseEnd(siteID: String) throws -> Date? {
-        try container.makeContext().fetch(FetchDescriptor<TitleFetchPause>(predicate: #Predicate { $0.siteID == siteID })).first?.until
-    }
-
-    /// 停止の期限は、すでに記録した期限より長いときだけ延ばす
-    func pause(siteID: String, until: Date) throws {
-        let context = container.makeContext()
-        if let pause = try context.fetch(FetchDescriptor<TitleFetchPause>(predicate: #Predicate { $0.siteID == siteID })).first {
-            pause.until = max(pause.until, until)
-        } else {
-            context.insert(TitleFetchPause(siteID: siteID, until: until))
-        }
-        try context.save()
+        try history.purge(now: now)
     }
 
     // MARK: - 記録の取得の状態
