@@ -53,7 +53,7 @@ struct TagRulesTests {
     func candidates() {
         #expect(TagRules.candidates(savedTags: []) == TagRules.presets)
 
-        let candidates = TagRules.candidates(savedTags: ["時短", "Pasta", "pasta", "ラム肉"])
+        let candidates = TagRules.candidates(savedTags: ["鶏肉", "Pasta", "pasta", "ラム肉"])
         #expect(Array(candidates.prefix(TagRules.presets.count)) == TagRules.presets)
         #expect(candidates.count == TagRules.presets.count + 2)
         #expect(candidates.contains("ラム肉"))
