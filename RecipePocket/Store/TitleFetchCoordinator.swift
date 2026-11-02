@@ -10,6 +10,8 @@ final class TitleFetchCoordinator {
     private let fetcher = TitleFetcher()
     private let onChange: @MainActor () -> Void
     private var isRunning = false
+    /// 取得の途中で呼ばれた。取得中にURLを変えた記録などを、今の回の後に取得する
+    private var needsRerun = false
 
     init(repository: TitleFetchRepository, onChange: @escaping @MainActor () -> Void) {
         self.repository = repository
@@ -17,10 +19,16 @@ final class TitleFetchCoordinator {
     }
 
     func start() {
-        guard !isRunning else { return }
+        guard !isRunning else {
+            needsRerun = true
+            return
+        }
         isRunning = true
         Task {
-            await run()
+            repeat {
+                needsRerun = false
+                await run()
+            } while needsRerun
             isRunning = false
         }
     }
