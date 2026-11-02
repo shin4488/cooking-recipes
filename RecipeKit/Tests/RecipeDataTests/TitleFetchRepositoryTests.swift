@@ -153,12 +153,14 @@ struct TitleFetchRepositoryTests {
         #expect(saved.titleFetchState == .notFetched)
     }
 
-    @Test("取得中のまま終了した記録は、次の起動で取得を待つ状態に戻す")
-    func resetInterrupted() throws {
+    @Test("取得中のまま終了した記録は、次の起動で取得失敗にし、いつ起動しても通信し直さない", arguments: [0, 2 * 24 * 60 * 60] as [TimeInterval])
+    func resetInterrupted(elapsed: TimeInterval) throws {
         let recipe = try repository.add(url: "https://www.sirogohan.com/recipe/nikujyaga/", title: .none, tags: [], now: now)
         _ = titleFetch.begin(recipe, now: now)
+        try titleFetch.purgeHistory(now: now.addingTimeInterval(elapsed))
         try titleFetch.resetInterrupted()
-        #expect(try repository.recipes().first?.needsTitleFetch == true)
+        #expect(try repository.recipes().first?.titleFetchState == .failed)
+        #expect(try titleFetch.recipesAwaitingFetch().isEmpty)
     }
 
     @Test("停止期限・試行日時を読めないときは通信せず、取得を待つ状態のまま残す。読めるようになれば取得する")

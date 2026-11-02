@@ -75,13 +75,13 @@ public final class TitleFetchRepository {
         return try? apply(outcome, to: fetching, now: now)
     }
 
-    /// 取得中のまま終了した記録を、取得を待つ状態に戻す
+    /// 取得中のまま終了した記録を「取得失敗」にする。通信したかが分からないため、いつ起動しても取り直さない
     public func resetInterrupted() throws {
         let context = container.makeContext()
         let fetching = TitleFetchState.fetching.rawValue
         let records = try context.fetch(FetchDescriptor<RecipeRecord>(predicate: #Predicate { $0.titleFetchStateValue == fetching }))
         guard !records.isEmpty else { return }
-        records.forEach { $0.titleFetchStateValue = TitleFetchState.notFetched.rawValue }
+        records.forEach { $0.titleFetchStateValue = TitleFetchState.failed.rawValue }
         try context.save()
     }
 
