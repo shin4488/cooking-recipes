@@ -49,9 +49,12 @@ public struct RecipeFormView: View {
                     #endif
                     .accessibilityLabel("URL")
                 if showsPasteButton {
-                    PasteButton(payloadType: String.self) { strings in
-                        guard let text = strings.first else { return }
-                        Task { @MainActor in model.paste(text) }
+                    PasteButton(supportedContentTypes: PastedText.contentTypes) { [model] providers in
+                        guard let provider = providers.first else { return }
+                        PastedText.load(from: provider) { text in
+                            guard let text else { return }
+                            Task { @MainActor in model.paste(text) }
+                        }
                     }
                     .labelStyle(.titleAndIcon)
                 }
