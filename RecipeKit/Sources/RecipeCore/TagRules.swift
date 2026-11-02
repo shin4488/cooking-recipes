@@ -14,7 +14,7 @@ public enum TagError: Error, Equatable, Sendable {
 
 public enum TagRules {
     /// アプリが用意するタグ。使われていなくても候補に残す。食材、食べる時間帯、用途の順に並べる
-    public static let presets = ["牛肉", "豚肉", "鶏肉", "魚介", "野菜", "朝ごはん", "昼ごはん", "夜ごはん", "お弁当", "時短"]
+    public static let presets = ["牛肉", "豚肉", "鶏肉", "魚介", "野菜", "朝ごはん", "昼ごはん", "夜ごはん", "おやつ", "お弁当"]
 
     /// 前後の空白を除き、改行を空白にする。空なら nil
     public static func clean(_ text: String) -> String? {
