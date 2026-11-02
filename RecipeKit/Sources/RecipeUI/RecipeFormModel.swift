@@ -101,16 +101,12 @@ public final class RecipeFormModel {
             || !tagInput.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
-    /// 保存後に本体がサイトからタイトルを取得する場合、そのサイト
+    /// 保存後に本体がサイトからタイトルを取得する場合、そのサイト。今の入力を保存したときの記録から決め、保存の規則と食い違わないようにする
     public var siteForTitleFetch: SupportedSite? {
-        guard TitleRules.clean(title).isEmpty, let site = SupportedSite.fetchableSite(for: trimmedURL) else { return nil }
-        switch mode {
-        case .add:
-            return titleEdited && initialTitleSource == .shared ? nil : site
-        case .edit:
-            let urlChanged = trimmedURL != initialURL
-            return urlChanged && !titleEdited && initialTitleSource != .manual ? site : nil
-        }
+        guard let saved = savedRecipe(), saved.titleSource == .none,
+              saved.titleFetchState == .notFetched || saved.titleFetchState == .fetching
+        else { return nil }
+        return SupportedSite.fetchableSite(for: saved.url)
     }
 
     /// タイトルが空のときの扱いの案内
@@ -194,18 +190,37 @@ public final class RecipeFormModel {
             // 共有元のタイトルを本人が消した場合は、その指定を守る
             return initialTitleSource == .shared ? .manual(nil) : .none
         case .edit(let recipe):
-            guard titleEdited, value != recipe.title else { return .unchanged }
+            // 元のタイトルと同じ文字でも、URLを変えたために消えるタイトルを入れ直したときは、本人の入力として残す
+            guard titleEdited, value != recipe.title || value != keptTitle(of: recipe) else { return .unchanged }
             return .manual(value)
         }
     }
 
+    /// 今の入力を保存したときの記録。タイトルが上限を超えるなど、保存できない入力では nil
+    private func savedRecipe() -> Recipe? {
+        guard case .success(let value) = TitleRules.validateManual(title) else { return nil }
+        let titleInput = makeTitleInput(value)
+        switch mode {
+        case .add:
+            return RecipeEditing.newRecipe(url: trimmedURL, title: titleInput, tags: tags, sortKey: 0, now: .now)
+        case .edit(let recipe):
+            return RecipeEditing.updated(recipe, url: trimmedURL, title: titleInput, tags: tags, now: .now)
+        }
+    }
+
+    /// 編集で、タイトルに触れずに今のURLで保存したときに残るタイトル。URLを変えると、共有元・自動取得のタイトルは消える
+    private func keptTitle(of recipe: Recipe) -> String? {
+        RecipeEditing.updated(recipe, url: trimmedURL, title: .unchanged, tags: recipe.tags, now: recipe.updatedAt).title
+    }
+
+    /// 編集でタイトルに触れていなければ、今のURLで保存したときに残るタイトルを表示する
     private func urlDidChange() {
         urlError = nil
-        guard case .edit = mode, !titleEdited, initialTitleSource == .shared || initialTitleSource == .fetched else { return }
-        let changed = trimmedURL != initialURL
+        guard case .edit(let recipe) = mode, !titleEdited else { return }
+        let kept = keptTitle(of: recipe)
         isReplacingTitle = true
-        title = changed ? "" : initialTitle
+        title = kept ?? ""
         isReplacingTitle = false
-        receivedTitleCleared = changed
+        receivedTitleCleared = recipe.title != nil && kept == nil
     }
 }
