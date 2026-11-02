@@ -55,11 +55,31 @@ final class TitleFetchCoordinator {
         case .fetch(let fetching, let site):
             onChange()
             // 取得中に裏へ回っても、通信と保存を終えられるようにする
-            let task = UIApplication.shared.beginBackgroundTask(withName: "TitleFetch")
+            let background = BackgroundExecution(name: "TitleFetch")
             let outcome = await fetcher.fetchTitle(for: fetching.url)
             repository.finish(fetching, site: site, outcome: outcome)
-            UIApplication.shared.endBackgroundTask(task)
+            background.end()
             onChange()
         }
+    }
+}
+
+/// 裏に回っても処理を続けるための許可。裏で使える時間が切れたときは、アプリが終了されないよう、その時点で終える。
+/// 終えたあとの取得は、前面に戻ってから結果を反映する
+@MainActor
+private final class BackgroundExecution {
+    private var identifier = UIBackgroundTaskIdentifier.invalid
+
+    init(name: String) {
+        identifier = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
+            self?.end()
+        }
+    }
+
+    /// 時間切れと処理の終わりのうち、先に来たほうで1度だけ終える
+    func end() {
+        guard identifier != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(identifier)
+        identifier = .invalid
     }
 }
