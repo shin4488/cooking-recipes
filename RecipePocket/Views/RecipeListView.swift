@@ -135,7 +135,8 @@ struct RecipeListView: View {
             toggleTags: {
                 if expandedTagIDs.contains(recipe.id) { expandedTagIDs.remove(recipe.id) } else { expandedTagIDs.insert(recipe.id) }
             },
-            edit: { editor = .edit(recipe) },
+            // 消える途中の行の「編集」は開かない。すでにごみ箱にあり、保存できないため
+            edit: { if store.recipes.contains(where: { $0.id == recipe.id }) { editor = .edit(recipe) } },
             copyURL: { store.copyURL(of: recipe) },
             delete: { withAnimation { store.delete(recipe) } },
             moveUp: store.canMoveUp(recipe) ? { store.moveUp(recipe) } : nil,

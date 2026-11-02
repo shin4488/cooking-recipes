@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// 保存などの結果を数秒だけ表示する。読み上げでも伝える
+/// 保存などの結果を画面下部に表示する。表示する時間と読み上げは ToastCenter が受け持つ
 struct ToastView: View {
     @Environment(ToastCenter.self) private var toasts
 
@@ -10,10 +10,9 @@ struct ToastView: View {
                 HStack(spacing: 12) {
                     Text(toast.message)
                         .font(.subheadline)
-                    if let title = toast.actionTitle, let action = toast.action {
+                    if let title = toast.actionTitle, toast.action != nil {
                         Button(title) {
-                            toasts.toast = nil
-                            action()
+                            toasts.performAction(of: toast)
                         }
                         .font(.subheadline.bold())
                     }
@@ -24,11 +23,6 @@ struct ToastView: View {
                 .shadow(radius: 4, y: 2)
                 .padding(.bottom, 12)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
-                .task(id: toast.id) {
-                    AccessibilityNotification.Announcement(toast.message).post()
-                    try? await Task.sleep(for: .seconds(toast.action == nil ? 2 : 5))
-                    withAnimation { if toasts.toast?.id == toast.id { toasts.toast = nil } }
-                }
             }
         }
         .animation(.default, value: toasts.toast)

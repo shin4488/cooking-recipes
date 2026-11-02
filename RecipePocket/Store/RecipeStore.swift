@@ -127,11 +127,26 @@ final class RecipeStore {
             analytics.log(.recipeDeleted)
             reload()
             toasts.show("ごみ箱に移動しました", actionTitle: "元に戻す") { [weak self] in
-                guard let self, let trashed = trash.first(where: { $0.id == recipe.id }) else { return }
-                _ = restore(trashed)
+                self?.undoDelete(of: recipe)
             }
+        } catch RecipeRepositoryError.notFound {
+            // 消える途中の行から続けて削除したときなど、すでに一覧にない記録。出している「元に戻す」の案内は残す
+            reload()
         } catch {
             toasts.show("削除できませんでした")
+        }
+    }
+
+    /// 削除の直後の「元に戻す」。戻せなかったときは理由を伝える
+    private func undoDelete(of recipe: Recipe) {
+        guard let trashed = trash.first(where: { $0.id == recipe.id }) else {
+            toasts.show("戻せませんでした")
+            return
+        }
+        switch restore(trashed) {
+        case .restored: break
+        case .duplicate: toasts.show("同じURLのレシピが一覧にあるため、戻せませんでした")
+        case .failed: toasts.show("戻せませんでした")
         }
     }
 

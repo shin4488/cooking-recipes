@@ -73,8 +73,7 @@ struct TrashView: View {
     private func row(_ item: TrashedRecipe) -> some View {
         HStack(alignment: .top, spacing: 8) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.recipe.displayTitle)
-                    .font(.headline)
+                RecipeTitleText(recipe: item.recipe)
                 if let label = item.recipe.siteLabel {
                     Text(label)
                         .font(.caption)
@@ -90,11 +89,7 @@ struct TrashView: View {
             Menu {
                 menuItems(item)
             } label: {
-                Image(systemName: "ellipsis.circle")
-                    .font(.title3)
-                    .foregroundStyle(Color.secondary)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(.rect)
+                RowMenuLabel()
             }
             .accessibilityLabel("「\(item.recipe.displayTitle)」の操作")
         }

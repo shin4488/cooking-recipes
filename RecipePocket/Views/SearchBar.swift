@@ -111,7 +111,15 @@ struct ComposingAwareTextField: UIViewRepresentable {
         @objc func editingChanged(_ field: UITextField) {
             guard !isApplyingText else { return }
             parent.text = field.text ?? ""
-            parent.onChange(field.markedTextRange != nil)
+            let isComposing = field.markedTextRange != nil
+            parent.onChange(isComposing)
+            // 語をチップにして入力中の文字が変わったら、次の文字が入る前に入力欄に入れる。
+            // 次の描画（updateUIView）まで待つと、その間に入力された文字と食い違い、語が消える
+            if !isComposing, field.text != parent.text {
+                isApplyingText = true
+                field.text = parent.text
+                isApplyingText = false
+            }
         }
 
         func textFieldShouldReturn(_ field: UITextField) -> Bool {
