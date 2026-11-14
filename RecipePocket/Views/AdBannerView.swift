@@ -54,22 +54,34 @@ struct AdBannerView: View {
 /// 1つの幅に合わせて読み込むバナー広告
 @MainActor
 @Observable
-private final class BannerAd: NSObject, BannerViewDelegate {
+private final class BannerAd: NSObject, BannerViewDelegate, AdSizeDelegate {
     private(set) var isLoaded = false
+    /// 表示する大きさ。読み込んだ広告が上限より低いときは、その広告の高さになる
+    private(set) var size: CGSize
     let width: CGFloat
     @ObservationIgnored let view: BannerView
     @ObservationIgnored private var hasFailed = false
 
     init(unitID: String, width: CGFloat) {
         self.width = width
-        view = BannerView(adSize: largeAnchoredAdaptiveBanner(width: width))
+        let adSize = Self.adSize(width: width)
+        size = adSize.size
+        view = BannerView(adSize: adSize)
         super.init()
         view.adUnitID = unitID
         view.delegate = self
+        view.adSizeDelegate = self
         load()
     }
 
-    var size: CGSize { view.adSize.size }
+    /// 一覧を広く見せるため、Google が画面の幅と向きから決める高さ（largeAnchoredAdaptiveBanner）の4分の3を、高さの上限にする。
+    /// 高さの上限を指定できるのは inlineAdaptiveBanner だけで、幅は画面の幅のまま、上限までの高さの広告が返る
+    private static func adSize(width: CGFloat) -> AdSize {
+        let standardHeight = largeAnchoredAdaptiveBanner(width: width).size.height
+        // 上限は50ポイント以上にすることを SDK が勧めている
+        let maxHeight = max(50, (standardHeight * 0.75).rounded())
+        return inlineAdaptiveBanner(width: width, maxHeight: maxHeight)
+    }
 
     func reloadIfFailed() {
         if hasFailed, !isLoaded { load() }
@@ -82,7 +94,12 @@ private final class BannerAd: NSObject, BannerViewDelegate {
     }
 
     func bannerViewDidReceiveAd(_ bannerView: BannerView) {
+        size = bannerView.adSize.size
         isLoaded = true
+    }
+
+    func adView(_ bannerView: BannerView, willChangeAdSizeTo size: AdSize) {
+        self.size = size.size
     }
 
     func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: any Error) {
